@@ -1,0 +1,97 @@
+{
+  "run_id": "eval-20260731T043050Z-fin-qa-judge-ungrounded",
+  "config_hash": "sha256:f2c1926d3899830c861a6fc692d38dab1371c620b5f688199bc1ec09eb01b1aa",
+  "sdk_version": "0.3.0",
+  "timestamp": "2026-07-31T04:30:50.695366+00:00",
+  "config": {
+    "benchmark": "fin-qa-judge-ungrounded",
+    "model": "domain-ft",
+    "base_url": "http://127.0.0.1:50859",
+    "repeats": 1,
+    "max_problems": 15,
+    "scorers": null,
+    "_sandbox_config": "capture_cmd=None verify_timeout=600.0 stateful=False type='none'",
+    "shuffle_seed": 42,
+    "shuffle": {
+      "seed": 42,
+      "applied": true,
+      "ds_full_size": 15,
+      "ds_effective_size": 15
+    }
+  },
+  "benchmark": {
+    "name": "fin-qa-judge-ungrounded",
+    "samples": 15,
+    "repeats": 1,
+    "scores": {
+      "mean_reward": {
+        "value": 0.6067,
+        "ci_lower": 0.5067,
+        "ci_upper": 0.7
+      },
+      "summary": {
+        "mean": 0.6066666666666667,
+        "std": 0.19444671200491873,
+        "min": 0.2,
+        "max": 0.9,
+        "median": 0.6,
+        "n": 15
+      },
+      "runtime": {
+        "total_steps": 15,
+        "total_tokens": 3255,
+        "total_prompt_tokens": 1943,
+        "total_completion_tokens": 1312,
+        "total_reasoning_tokens": 0,
+        "elapsed_seconds": 24.2,
+        "latency_percentiles_ms": {
+          "p50": 5668.53,
+          "p90": 10579.75,
+          "p99": 14918.13
+        },
+        "tokens_per_second": 134.53,
+        "steps_per_second": 0.62,
+        "model_errors": 0,
+        "total_retries": 0,
+        "finish_reason_counts": {
+          "stop": 15
+        }
+      },
+      "failures": {
+        "total_steps": 15,
+        "total_failures": 3,
+        "failure_rate": 0.2,
+        "categories": {
+          "refusal": {
+            "count": 3,
+            "percentage": 0.2,
+            "exemplars": [
+              {
+                "problem_idx": 7,
+                "repeat": 0,
+                "error": "refusal"
+              },
+              {
+                "problem_idx": 8,
+                "repeat": 0,
+                "error": "refusal"
+              },
+              {
+                "problem_idx": 12,
+                "repeat": 0,
+                "error": "refusal"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "categories": {
+      "summarization": {
+        "mean_reward": 0.6067,
+        "n": 15
+      }
+    }
+  },
+  "n_results": 15
+}

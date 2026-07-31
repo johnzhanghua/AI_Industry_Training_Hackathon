@@ -22,7 +22,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW_ROOT = ROOT / "data_set2" / "raw"
-RAW_RBA = RAW_ROOT / "RBA Rates" / "RBA-rates.jsonl"
+RAW_RBA = RAW_ROOT / "RBA_Rates" / "RBA-rates.jsonl"
 RAW_ASX_DIR = RAW_ROOT / "ASX"
 RAW_AFR_DIR = RAW_ROOT / "AFR"
 
@@ -62,7 +62,7 @@ def clean_rba(clean_root: Path):
             "change_bps": round(change_pct * 100),  # x100, NOT x10000 -- check the math yourself
             "cash_rate_target_pct": float(rec["Cash rate target%"]),
         })
-    out_path = clean_root / "RBA Rates" / RAW_RBA.name
+    out_path = clean_root / "RBA_Rates" / RAW_RBA.name
     write_jsonl(out_path, rows)
     print(f"[1/4] rba clean  -> {out_path}  ({len(rows)} rows)")
 

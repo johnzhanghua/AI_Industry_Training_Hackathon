@@ -1,0 +1,347 @@
+{
+  "filesProcessed": 85,
+  "totalArticles": 219538,
+  "failures": 0,
+  "perFile": [
+    {
+      "file": "AFR_20150101-20150131.jsonl",
+      "articles": 1975
+    },
+    {
+      "file": "AFR_20150201-20150201.jsonl",
+      "articles": 0
+    },
+    {
+      "file": "AFR_20150201-20150228.jsonl",
+      "articles": 2370
+    },
+    {
+      "file": "AFR_20150301-20150331.jsonl",
+      "articles": 2598
+    },
+    {
+      "file": "AFR_20150401-20150430.jsonl",
+      "articles": 2165
+    },
+    {
+      "file": "AFR_20150501-20150531.jsonl",
+      "articles": 2676
+    },
+    {
+      "file": "AFR_20150601-20150630.jsonl",
+      "articles": 2447
+    },
+    {
+      "file": "AFR_20150701-20150731.jsonl",
+      "articles": 2835
+    },
+    {
+      "file": "AFR_20150801-20150831.jsonl",
+      "articles": 2657
+    },
+    {
+      "file": "AFR_20150901-20150930.jsonl",
+      "articles": 2673
+    },
+    {
+      "file": "AFR_20151001-20151031.jsonl",
+      "articles": 2701
+    },
+    {
+      "file": "AFR_20151101-20151130.jsonl",
+      "articles": 2475
+    },
+    {
+      "file": "AFR_20151201-20151231.jsonl",
+      "articles": 1944
+    },
+    {
+      "file": "AFR_20160101-20160131.jsonl",
+      "articles": 1768
+    },
+    {
+      "file": "AFR_20160201-20160229.jsonl",
+      "articles": 2516
+    },
+    {
+      "file": "AFR_20160301-20160331.jsonl",
+      "articles": 2311
+    },
+    {
+      "file": "AFR_20160401-20160430.jsonl",
+      "articles": 2406
+    },
+    {
+      "file": "AFR_20160501-20160531.jsonl",
+      "articles": 2454
+    },
+    {
+      "file": "AFR_20160601-20160630.jsonl",
+      "articles": 2413
+    },
+    {
+      "file": "AFR_20160701-20160731.jsonl",
+      "articles": 2334
+    },
+    {
+      "file": "AFR_20160801-20160831.jsonl",
+      "articles": 4151
+    },
+    {
+      "file": "AFR_20160901-20160930.jsonl",
+      "articles": 5476
+    },
+    {
+      "file": "AFR_20161001-20161031.jsonl",
+      "articles": 5539
+    },
+    {
+      "file": "AFR_20161101-20161130.jsonl",
+      "articles": 5784
+    },
+    {
+      "file": "AFR_20161201-20161231.jsonl",
+      "articles": 3209
+    },
+    {
+      "file": "AFR_20170101-20170131.jsonl",
+      "articles": 1914
+    },
+    {
+      "file": "AFR_20170201-20170228.jsonl",
+      "articles": 2152
+    },
+    {
+      "file": "AFR_20170301-20170331.jsonl",
+      "articles": 2728
+    },
+    {
+      "file": "AFR_20170401-20170430.jsonl",
+      "articles": 1906
+    },
+    {
+      "file": "AFR_20170501-20170531.jsonl",
+      "articles": 2200
+    },
+    {
+      "file": "AFR_20170601-20170630.jsonl",
+      "articles": 2027
+    },
+    {
+      "file": "AFR_20170701-20170731.jsonl",
+      "articles": 2014
+    },
+    {
+      "file": "AFR_20170801-20170831.jsonl",
+      "articles": 2243
+    },
+    {
+      "file": "AFR_20170901-20170930.jsonl",
+      "articles": 2288
+    },
+    {
+      "file": "AFR_20171001-20171031.jsonl",
+      "articles": 2405
+    },
+    {
+      "file": "AFR_20171101-20171130.jsonl",
+      "articles": 2444
+    },
+    {
+      "file": "AFR_20171201-20171231.jsonl",
+      "articles": 1724
+    },
+    {
+      "file": "AFR_20180101-20180131.jsonl",
+      "articles": 1625
+    },
+    {
+      "file": "AFR_20180201-20180228.jsonl",
+      "articles": 1958
+    },
+    {
+      "file": "AFR_20180301-20180331.jsonl",
+      "articles": 2060
+    },
+    {
+      "file": "AFR_20180401-20180430.jsonl",
+      "articles": 1765
+    },
+    {
+      "file": "AFR_20180501-20180531.jsonl",
+      "articles": 2217
+    },
+    {
+      "file": "AFR_20180601-20180630.jsonl",
+      "articles": 1986
+    },
+    {
+      "file": "AFR_20180701-20180731.jsonl",
+      "articles": 1844
+    },
+    {
+      "file": "AFR_20180801-20180831.jsonl",
+      "articles": 2219
+    },
+    {
+      "file": "AFR_20180901-20180930.jsonl",
+      "articles": 1867
+    },
+    {
+      "file": "AFR_20181001-20181031.jsonl",
+      "articles": 2427
+    },
+    {
+      "file": "AFR_20181101-20181130.jsonl",
+      "articles": 2097
+    },
+    {
+      "file": "AFR_20181201-20181231.jsonl",
+      "articles": 1559
+    },
+    {
+      "file": "AFR_20190101-20190131.jsonl",
+      "articles": 1546
+    },
+    {
+      "file": "AFR_20190201-20190228.jsonl",
+      "articles": 1989
+    },
+    {
+      "file": "AFR_20190301-20190331.jsonl",
+      "articles": 2022
+    },
+    {
+      "file": "AFR_20190401-20190430.jsonl",
+      "articles": 1875
+    },
+    {
+      "file": "AFR_20190501-20190531.jsonl",
+      "articles": 2437
+    },
+    {
+      "file": "AFR_20190601-20190630.jsonl",
+      "articles": 1883
+    },
+    {
+      "file": "AFR_20190701-20190731.jsonl",
+      "articles": 2211
+    },
+    {
+      "file": "AFR_20190801-20190831.jsonl",
+      "articles": 2492
+    },
+    {
+      "file": "AFR_20190901-20190930.jsonl",
+      "articles": 2370
+    },
+    {
+      "file": "AFR_20191001-20191031.jsonl",
+      "articles": 2630
+    },
+    {
+      "file": "AFR_20191101-20191130.jsonl",
+      "articles": 2650
+    },
+    {
+      "file": "AFR_20191201-20191231.jsonl",
+      "articles": 1816
+    },
+    {
+      "file": "AFR_20200101-20200131.jsonl",
+      "articles": 2112
+    },
+    {
+      "file": "AFR_20200201-20200229.jsonl",
+      "articles": 2560
+    },
+    {
+      "file": "AFR_20200301-20200331.jsonl",
+      "articles": 2701
+    },
+    {
+      "file": "AFR_20200401-20200430.jsonl",
+      "articles": 2338
+    },
+    {
+      "file": "AFR_20200501-20200531.jsonl",
+      "articles": 2956
+    },
+    {
+      "file": "AFR_20200601-20200630.jsonl",
+      "articles": 3320
+    },
+    {
+      "file": "AFR_20200701-20200731.jsonl",
+      "articles": 3607
+    },
+    {
+      "file": "AFR_20200801-20200831.jsonl",
+      "articles": 3547
+    },
+    {
+      "file": "AFR_20200901-20200930.jsonl",
+      "articles": 3378
+    },
+    {
+      "file": "AFR_20201001-20201031.jsonl",
+      "articles": 3585
+    },
+    {
+      "file": "AFR_20201101-20201130.jsonl",
+      "articles": 3068
+    },
+    {
+      "file": "AFR_20201201-20201231.jsonl",
+      "articles": 2512
+    },
+    {
+      "file": "AFR_20210101-20210131.jsonl",
+      "articles": 2293
+    },
+    {
+      "file": "AFR_20210201-20210228.jsonl",
+      "articles": 3270
+    },
+    {
+      "file": "AFR_20210301-20210331.jsonl",
+      "articles": 3428
+    },
+    {
+      "file": "AFR_20210401-20210430.jsonl",
+      "articles": 2965
+    },
+    {
+      "file": "AFR_20210501-20210531.jsonl",
+      "articles": 3352
+    },
+    {
+      "file": "AFR_20210601-20210630.jsonl",
+      "articles": 3444
+    },
+    {
+      "file": "AFR_20210701-20210731.jsonl",
+      "articles": 3487
+    },
+    {
+      "file": "AFR_20210801-20210831.jsonl",
+      "articles": 3521
+    },
+    {
+      "file": "AFR_20210901-20210930.jsonl",
+      "articles": 3238
+    },
+    {
+      "file": "AFR_20211001-20211031.jsonl",
+      "articles": 3001
+    },
+    {
+      "file": "AFR_20211101-20211130.jsonl",
+      "articles": 3635
+    },
+    {
+      "file": "AFR_20211201-20211231.jsonl",
+      "articles": 2753
+    }
+  ]
+}
