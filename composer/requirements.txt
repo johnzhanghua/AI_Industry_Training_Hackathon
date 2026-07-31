@@ -1,0 +1,31 @@
+# Workshop dependencies — install into llm-eval-workshop (Python 3.12).
+# Keep this list to packages imported or launched by the notebooks. Transitive
+# dependencies are resolved by pip.
+#
+# Usage (from repo root):
+#   python -m pip install -r composer/requirements.txt
+
+# --- Notebook runtime ---
+jupyterlab==4.6.2
+ipykernel==6.29.5
+ipywidgets==8.1.3
+pandas>=2.2,<3
+requests>=2.32,<3
+matplotlib>=3.9,<4
+pyyaml>=6,<7
+
+# --- Benchmark evaluation (notebook 01) ---
+lm-eval[api]==0.4.12
+chardet<4
+transformers>=4.48,<5
+
+# --- Dataset preprocessing (notebook 02) ---
+ftfy>=6,<7
+datasets>=4,<6
+beautifulsoup4>=4,<5
+
+# --- NeMo Evaluator SDK and custom scorers (notebook 02) ---
+# The BYOB decorator and result schema are versioned APIs, so pin the tested SDK.
+nemo-evaluator==0.3.0
+rouge-score==0.1.2
+sacrebleu>=2.6,<3
