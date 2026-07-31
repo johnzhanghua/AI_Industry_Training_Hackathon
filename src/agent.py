@@ -107,77 +107,77 @@ def query_rba_cash_rate(effective_date: str = None) -> str:
     except Exception as e:
         return f"Error accessing local RBA dataset: {str(e)}"
 
-def query_asx_prices(ticker: str = None, date: str = None) -> str:
-    """
-    Queries the partitioned local cleaned ASX dataset.
-    :param ticker: The stock ticker (e.g. 'IAG'). If set to 'all' or omitted, returns global dataset metadata.
-    :param date: Date formatted as YYYY-MM-DD. If set to 'all' or omitted, returns global dataset metadata.
-    """
-    # 1. Check if the model is requesting general dataset dimensions/metadata
-    if (not ticker or ticker.lower().strip() in ["all", "history", "metadata", "none", "null"]) or \
-       (not date or date.lower().strip() in ["all", "history", "metadata", "none", "null"]):
+# def query_asx_prices(ticker: str = None, date: str = None) -> str:
+#     """
+#     Queries the partitioned local cleaned ASX dataset.
+#     :param ticker: The stock ticker (e.g. 'IAG'). If set to 'all' or omitted, returns global dataset metadata.
+#     :param date: Date formatted as YYYY-MM-DD. If set to 'all' or omitted, returns global dataset metadata.
+#     """
+#     # 1. Check if the model is requesting general dataset dimensions/metadata
+#     if (not ticker or ticker.lower().strip() in ["all", "history", "metadata", "none", "null"]) or \
+#        (not date or date.lower().strip() in ["all", "history", "metadata", "none", "null"]):
         
-        if not os.path.exists(CLEANED_ASX_DIR):
-            return f"Error: Cleaned ASX directory not found at {CLEANED_ASX_DIR}."
+#         if not os.path.exists(CLEANED_ASX_DIR):
+#             return f"Error: Cleaned ASX directory not found at {CLEANED_ASX_DIR}."
             
-        try:
-            # Find all partitioned ticker files
-            target_files = glob.glob(os.path.join(CLEANED_ASX_DIR, "*.jsonl"))
-            file_count = len(target_files)
+#         try:
+#             # Find all partitioned ticker files
+#             target_files = glob.glob(os.path.join(CLEANED_ASX_DIR, "*.jsonl"))
+#             file_count = len(target_files)
             
-            if file_count > 0:
-                # Read a sample file (e.g., the first one) to determine row count and date ranges
-                sample_file = target_files[0]
-                rows = []
-                with open(sample_file, 'r', encoding='utf-8') as f:
-                    for line in f:
-                        if line.strip():
-                            rows.append(json.loads(line))
+#             if file_count > 0:
+#                 # Read a sample file (e.g., the first one) to determine row count and date ranges
+#                 sample_file = target_files[0]
+#                 rows = []
+#                 with open(sample_file, 'r', encoding='utf-8') as f:
+#                     for line in f:
+#                         if line.strip():
+#                             rows.append(json.loads(line))
                 
-                row_count = len(rows)
-                if row_count > 0:
-                    min_date = rows[0].get("date")
-                    max_date = rows[-1].get("date")
+#                 row_count = len(rows)
+#                 if row_count > 0:
+#                     min_date = rows[0].get("date")
+#                     max_date = rows[-1].get("date")
                     
-                    # Return standard schema structure for the synthesizer
-                    return json.dumps({
-                        "ticker_files_count": file_count,
-                        "rows_per_file": row_count,
-                        "min_date": min_date,
-                        "max_date": max_date,
-                        "tickers_present": [os.path.basename(f).replace(".jsonl", "") for f in target_files]
-                    })
-            return f"No ASX ticker data found in {CLEANED_ASX_DIR}."
-        except Exception as e:
-            return f"Error reading ASX metadata: {str(e)}"
+#                     # Return standard schema structure for the synthesizer
+#                     return json.dumps({
+#                         "ticker_files_count": file_count,
+#                         "rows_per_file": row_count,
+#                         "min_date": min_date,
+#                         "max_date": max_date,
+#                         "tickers_present": [os.path.basename(f).replace(".jsonl", "") for f in target_files]
+#                     })
+#             return f"No ASX ticker data found in {CLEANED_ASX_DIR}."
+#         except Exception as e:
+#             return f"Error reading ASX metadata: {str(e)}"
 
-    # 2. Otherwise, run standard point-lookup query
-    clean_ticker = ticker.strip().replace(".AX", "").replace(".ax", "").upper()
-    target_date = date.strip()
-    ticker_file_path = os.path.join(CLEANED_ASX_DIR, f"{clean_ticker}.jsonl")
+#     # 2. Otherwise, run standard point-lookup query
+#     clean_ticker = ticker.strip().replace(".AX", "").replace(".ax", "").upper()
+#     target_date = date.strip()
+#     ticker_file_path = os.path.join(CLEANED_ASX_DIR, f"{clean_ticker}.jsonl")
     
-    if not os.path.exists(ticker_file_path):
-        return f"No ASX record found. Ticker '{clean_ticker}' does not exist in local dataset."
+#     if not os.path.exists(ticker_file_path):
+#         return f"No ASX record found. Ticker '{clean_ticker}' does not exist in local dataset."
 
-    try:
-        with open(ticker_file_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                if not line.strip():
-                    continue
-                record = json.loads(line)
-                if record.get("date") == target_date:
-                    return json.dumps({
-                        "ticker": record["ticker"],
-                        "date": record["date"],
-                        "open": record["open"],
-                        "high": record["high"],
-                        "low": record["low"],
-                        "close": record["close"],
-                        "volume": record["volume"]
-                    })
-        return f"No stock prices found for ticker '{clean_ticker}' on date {target_date}."
-    except Exception as e:
-        return f"Error reading ASX record for {clean_ticker}: {str(e)}"
+#     try:
+#         with open(ticker_file_path, 'r', encoding='utf-8') as f:
+#             for line in f:
+#                 if not line.strip():
+#                     continue
+#                 record = json.loads(line)
+#                 if record.get("date") == target_date:
+#                     return json.dumps({
+#                         "ticker": record["ticker"],
+#                         "date": record["date"],
+#                         "open": record["open"],
+#                         "high": record["high"],
+#                         "low": record["low"],
+#                         "close": record["close"],
+#                         "volume": record["volume"]
+#                     })
+#         return f"No stock prices found for ticker '{clean_ticker}' on date {target_date}."
+#     except Exception as e:
+#         return f"Error reading ASX record for {clean_ticker}: {str(e)}"
 
 def query_afr_news(query: str, date_filter: str = None, max_results: int = 3) -> str:
     """Scans the cleaned local AFR news corpus folder for articles."""
@@ -224,6 +224,135 @@ def query_afr_news(query: str, date_filter: str = None, max_results: int = 3) ->
     except Exception as e:
         return f"Error searching AFR database: {str(e)}"
 
+def query_asx_prices(ticker: str = None, date: str = None) -> str:
+    """
+    Queries the partitioned local cleaned ASX dataset.
+    :param ticker: Cleaned stock ticker (e.g. 'IAG'), a comma-separated list (e.g. 'AGL, IAG'), 
+                   or set to 'all' to retrieve data for all available tickers.
+    :param date: Specific date formatted as YYYY-MM-DD (e.g. '2015-01-02'), 
+                 or a 4-digit year (e.g. '2018') to retrieve start/end records of that year.
+    """
+    if not os.path.exists(CLEANED_ASX_DIR):
+        return f"Error: Cleaned ASX directory not found at {CLEANED_ASX_DIR}."
+
+    ticker_str = (ticker or "").strip()
+    date_str = (date or "").strip()
+
+    # Helper to get the first and last trading record of a given year for a single file
+    def get_year_bounds(file_path: str, year: str) -> dict:
+        first_row = None
+        last_row = None
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    record = json.loads(line)
+                    if record.get("date", "").startswith(f"{year}-"):
+                        if first_row is None:
+                            first_row = record
+                        last_row = record
+            if first_row and last_row:
+                return {
+                    "ticker": first_row["ticker"],
+                    "start_date": first_row["date"],
+                    "start_close": first_row["close"],
+                    "end_date": last_row["date"],
+                    "end_close": last_row["close"]
+                }
+        except Exception:
+            pass
+        return None
+
+    # Helper to get exact date record from a single file
+    def get_date_record(file_path: str, target_date: str) -> dict:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    record = json.loads(line)
+                    if record.get("date") == target_date:
+                        return record
+        except Exception:
+            pass
+        return None
+
+    # CASE 1: Query is requesting historical bounds for a given Year (e.g., "2018")
+    if len(date_str) == 4 and date_str.isdigit():
+        target_year = date_str
+        
+        # Subcase A: All tickers
+        if not ticker_str or ticker_str.lower() in ["all", "history", "metadata", "none", "null"]:
+            target_files = glob.glob(os.path.join(CLEANED_ASX_DIR, "*.jsonl"))
+            results = []
+            for file_path in target_files:
+                bounds = get_year_bounds(file_path, target_year)
+                if bounds:
+                    results.append(bounds)
+            return json.dumps(results)
+            
+        # Subcase B: Specific comma-separated list of tickers
+        else:
+            tickers = [t.strip().upper() for t in ticker_str.split(",") if t.strip()]
+            results = []
+            for t in tickers:
+                file_path = os.path.join(CLEANED_ASX_DIR, f"{t}.jsonl")
+                if os.path.exists(file_path):
+                    bounds = get_year_bounds(file_path, target_year)
+                    if bounds:
+                        results.append(bounds)
+            return json.dumps(results) if results else f"No records found for tickers {ticker_str} in {target_year}."
+
+    # CASE 2: Query is requesting general folder metadata (no specific parameters)
+    if (not ticker_str or ticker_str.lower() in ["all", "history", "metadata", "none", "null"]) and \
+       (not date_str or date_str.lower() in ["all", "history", "metadata", "none", "null"]):
+        
+        target_files = glob.glob(os.path.join(CLEANED_ASX_DIR, "*.jsonl"))
+        file_count = len(target_files)
+        if file_count > 0:
+            sample_file = target_files[0]
+            rows = []
+            with open(sample_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.strip():
+                        rows.append(json.loads(line))
+            row_count = len(rows)
+            if row_count > 0:
+                return json.dumps({
+                    "ticker_files_count": file_count,
+                    "rows_per_file": row_count,
+                    "min_date": rows[0].get("date"),
+                    "max_date": rows[-1].get("date"),
+                    "tickers_present": [os.path.basename(f).replace(".jsonl", "") for f in target_files]
+                })
+        return f"No ASX ticker data found in {CLEANED_ASX_DIR}."
+
+    # CASE 3: Query is a point-lookup for a specific YYYY-MM-DD date
+    if date_str:
+        # Subcase A: All tickers on this date
+        if not ticker_str or ticker_str.lower() in ["all", "history", "none"]:
+            target_files = glob.glob(os.path.join(CLEANED_ASX_DIR, "*.jsonl"))
+            results = []
+            for file_path in target_files:
+                rec = get_date_record(file_path, date_str)
+                if rec:
+                    results.append(rec)
+            return json.dumps(results) if results else f"No records found for date {date_str}."
+        
+        # Subcase B: Commas-separated list of tickers on this date
+        else:
+            tickers = [t.strip().upper() for t in ticker_str.split(",") if t.strip()]
+            results = []
+            for t in tickers:
+                file_path = os.path.join(CLEANED_ASX_DIR, f"{t}.jsonl")
+                if os.path.exists(file_path):
+                    rec = get_date_record(file_path, date_str)
+                    if rec:
+                        results.append(rec)
+            return json.dumps(results) if results else f"No records found for tickers {ticker_str} on date {date_str}."
+
+    return "Invalid parameters passed to query_asx_prices."
 
 @traceable(run_type="tool", name="execute_tool")
 def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> str:
@@ -253,9 +382,11 @@ def reasoning_planner(state: AgentState) -> Dict[str, Any]:
     "1. query_rba_cash_rate(effective_date: str) -> Expects YYYY-MM-DD. "
     "   If the question requires aggregate counts or trends, and the RBA history is NOT already present "
     "   in the context, pass effective_date=all to retrieve it.\n"
-    "2. query_asx_prices(ticker: str, date: str) -> Expects clean ticker (e.g., 'AGL') and date as YYYY-MM-DD. "
-    "   If the question asks about ASX dataset metadata/dimensions, and this metadata is NOT already present "
-    "   in the context, pass ticker=all and date=all to retrieve it.\n"
+    "2. query_asx_prices(ticker: str, date: str) -> Expects clean ticker (e.g., 'AGL'), a comma-separated list of tickers "
+    "   (e.g., 'AGL, IAG'), or 'all'. Expects date as YYYY-MM-DD (e.g. '2015-01-02') or a 4-digit year (e.g. '2018').\n"
+    "   - If a question asks about dataset metadata, pass ticker=all and date=all.\n"
+    "   - If a question requires comparing stock returns or pricing across a whole year, pass ticker=all and date=YYYY "
+    "     (e.g. date=2018) to retrieve the start and end prices of that year for all tickers.\n"
     "3. query_afr_news(query: str, date_filter: str) -> Searches news, optional date as YYYY-MM-DD\n\n"
     
     "CRITICAL CONSTRAINTS & INSTRUCTIONS:\n"
@@ -272,24 +403,24 @@ def reasoning_planner(state: AgentState) -> Dict[str, Any]:
     "None\n"
     "Assistant Output:\n"
     "<thinking>\n"
-    "1. The user is asking for aggregate RBA metrics over the entire historical range.\n"
+    "1. The user is asking for aggregate statistics (counts of changes, increases, and decreases) over the entire historical range of the RBA dataset.\n"
     "2. The RBA history is not present in the current context.\n"
-    "3. I must call the tool with effective_date=all to fetch the history.\n"
+    "3. I must call the tool with effective_date=all.\n"
     "</thinking>\n"
     "CALL: query_rba_cash_rate|effective_date=all\n\n"
     
-    "Example 2: Analyzing the entire history (Context is already present -> Finish)\n"
-    "User Question: From the first RBA record to the last, how many cash-rate decisions changed the rate?\n"
+    "Example 2: Analyzing Annual Ticker Performance (No Context present -> Call Tool)\n"
+    "User Question: Excluding Tabcorp, which ticker had the best and worst 2018 return?\n"
     "Accumulated Data Context:\n"
-    "[{\"effective_date\": \"2010-02-03\", \"change_pct\": 0.00, \"cash_rate_target\": 3.75, \"change_bps\": 0}, ...]\n"
+    "None\n"
     "Assistant Output:\n"
     "<thinking>\n"
-    "1. The user wants the count of RBA cash-rate changes across the entire history.\n"
-    "2. The accumulated data context already contains the full RBA dataset.\n"
-    "3. Because the data is already present, I do not need to call the tool again.\n"
-    "4. I will transition to the synthesis phase.\n"
+    "1. The user wants to compare the 2018 annual returns across all tickers (excluding Tabcorp).\n"
+    "2. To calculate 2018 returns, I need the starting and ending prices for 2018 for all tickers.\n"
+    "3. Instead of querying each ticker individually, I can retrieve the 2018 start and end bounds for all tickers by calling query_asx_prices with ticker=all and date=2018.\n"
+    "4. I will make this call.\n"
     "</thinking>\n"
-    "DECISION: READY\n\n"
+    "CALL: query_asx_prices|ticker=all,date=2018\n\n"
     
     "Example 3: Querying ASX Dataset Metadata (No Context present -> Call Tool)\n"
     "User Question: What are the dimensions and common date range of the ASX dataset?\n"
@@ -303,15 +434,15 @@ def reasoning_planner(state: AgentState) -> Dict[str, Any]:
     "</thinking>\n"
     "CALL: query_asx_prices|ticker=all,date=all\n\n"
     
-    "Example 4: Querying ASX Dataset Metadata (Context is already present -> Finish)\n"
-    "User Question: What are the dimensions and common date range of the ASX dataset?\n"
+    "Example 4: Ready to Synthesize (Context is already present -> Finish)\n"
+    "User Question: Excluding Tabcorp, which ticker had the best and worst 2018 return?\n"
     "Accumulated Data Context:\n"
-    "{\"ticker_files_count\": 18, \"rows_per_file\": 1774, \"min_date\": \"2015-01-02\", \"max_date\": \"2021-12-30\"}\n"
+    "[{\"ticker\": \"AGL\", \"start_date\": \"2018-01-02\", \"start_close\": 22.10, \"end_date\": \"2018-12-31\", \"end_close\": 20.30}, ...]\n"
     "Assistant Output:\n"
     "<thinking>\n"
-    "1. The user wants to know the dimensions and date range of the ASX dataset.\n"
-    "2. The accumulated context already contains the metadata containing file counts, row counts, and date limits.\n"
-    "3. Since the information is already in the context, I will stop and transition to synthesis.\n"
+    "1. The accumulated context contains the starting and ending 2018 prices for all stock tickers.\n"
+    "2. The necessary parameters to calculate annual percentage returns are available.\n"
+    "3. No further queries are required. I will transition to the analysis and synthesis phase.\n"
     "</thinking>\n"
     "DECISION: READY"
 )
@@ -425,30 +556,93 @@ def synthesis_node(state: AgentState) -> Dict[str, Any]:
 
     return {"final_answer": answer}
 
+def analytical_processor(state: AgentState) -> Dict[str, Any]:
+    """
+    NEW NODE: Qwen-35B (BRAIN_MODEL) receives the user query and the accumulated
+    context. It performs the rigorous mathematical, chronological, and logical analysis.
+    """
+    question = state["question"]
+    context = state["context"]
+    error_msg = state.get("error_message", "")
+
+    system_prompt = (
+        "You are an expert financial market analyst. Your job is to perform a detailed, "
+        "step-by-step mathematical, statistical, or logical analysis of the provided data context "
+        "to answer the user's query.\n"
+        "Provide a highly accurate, calculated analysis report. Show your math and chronological breakdowns."
+    )
+    if error_msg:
+        system_prompt += f"\n\nNOTE: System encountered errors prior to this step: {error_msg}."
+
+    user_message = f"Raw Context Blocks:\n{context}\n\nUser Question: {question}"
+
+    try:
+        analysis_report = call_llm(BRAIN_MODEL, system_prompt, user_message)
+    except Exception as e:
+        logger.error("Exception in analytical_processor: %s", str(e))
+        analysis_report = f"Analytical processing execution failed: {str(e)}"
+
+    return {"analysis_report": analysis_report}
 
 # --- 4. Conditional Routing (Enhanced with Error-Bypass) ---
-def router(state: AgentState) -> Literal["execute_tools", "synthesize_answer"]:
-    # 1. If an error message has been recorded, bypass standard iterations and finalize immediately
+# def router(state: AgentState) -> Literal["execute_tools", "synthesize_answer"]:
+#     # 1. If an error message has been recorded, bypass standard iterations and finalize immediately
+#     if state.get("error_message"):
+#         return "synthesize_answer"
+
+#     # 2. Enforce execution loop safety limits
+#     if state["loop_count"] >= state["max_loops"]:
+#         return "synthesize_answer"
+    
+#     # 3. Standard parsing transitions
+#     plan = state.get("plan", "")
+#     if "DECISION: READY" in plan or not state.get("tool_calls"):
+#         return "synthesize_answer"
+        
+#     return "execute_tools"
+
+# --- 4. Conditional Routing (Enhanced with Error-Bypass) ---
+def router(state: AgentState) -> Literal["execute_tools", "analyze_data"]:
+    # 1. If an error message has been recorded, bypass standard iterations and analyze immediately
     if state.get("error_message"):
-        return "synthesize_answer"
+        return "analyze_data"
 
     # 2. Enforce execution loop safety limits
     if state["loop_count"] >= state["max_loops"]:
-        return "synthesize_answer"
+        return "analyze_data"
     
     # 3. Standard parsing transitions
     plan = state.get("plan", "")
     if "DECISION: READY" in plan or not state.get("tool_calls"):
-        return "synthesize_answer"
+        return "analyze_data"
         
     return "execute_tools"
 
-
 # --- 5. Compile the Graph ---
+# workflow = StateGraph(AgentState)
+
+# workflow.add_node("reasoning_planner", reasoning_planner)
+# workflow.add_node("execute_tools", execute_tools_node)
+# workflow.add_node("synthesize_answer", synthesis_node)
+
+# workflow.add_edge(START, "reasoning_planner")
+# workflow.add_conditional_edges(
+#     "reasoning_planner",
+#     router,
+#     {
+#         "execute_tools": "execute_tools",
+#         "synthesize_answer": "synthesize_answer"
+#     }
+# )
+# workflow.add_edge("execute_tools", "reasoning_planner")
+# workflow.add_edge("synthesize_answer", END)
+
+# app = workflow.compile()
 workflow = StateGraph(AgentState)
 
 workflow.add_node("reasoning_planner", reasoning_planner)
 workflow.add_node("execute_tools", execute_tools_node)
+workflow.add_node("analyze_data", analytical_processor)  # Add new analytical node
 workflow.add_node("synthesize_answer", synthesis_node)
 
 workflow.add_edge(START, "reasoning_planner")
@@ -457,10 +651,11 @@ workflow.add_conditional_edges(
     router,
     {
         "execute_tools": "execute_tools",
-        "synthesize_answer": "synthesize_answer"
+        "analyze_data": "analyze_data"  # Route to analyzer instead of straight to synthesis
     }
 )
 workflow.add_edge("execute_tools", "reasoning_planner")
+workflow.add_edge("analyze_data", "synthesize_answer")  # Analyzer flows to synthesizer
 workflow.add_edge("synthesize_answer", END)
 
 app = workflow.compile()
