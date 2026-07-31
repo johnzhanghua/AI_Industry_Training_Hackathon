@@ -77,10 +77,11 @@ class AgentState(TypedDict):
 
 
 # --- 2. Aligned Mock Tools (Using Cleaned Schemas) ---
-def query_rba_cash_rate(effective_date: str) -> str:
+def query_rba_cash_rate(effective_date: str = None) -> str:
     """
-    Queries the cleaned local RBA CSV dataset.
-    :param effective_date: Date formatted as YYYY-MM-DD (e.g., '2010-03-03')
+    Queries the local RBA cash rate decisions dataset.
+    :param effective_date: Optional. Specific date formatted as YYYY-MM-DD. 
+                           If omitted, or set to "all" / "history", returns the entire historical dataset.
     """
     if not os.path.exists(CLEANED_RBA_PATH):
         return f"Error: Cleaned RBA database file not found at {CLEANED_RBA_PATH}."
@@ -91,6 +92,12 @@ def query_rba_cash_rate(effective_date: str) -> str:
         
         # Ensure effective_date column matches string-wise
         df["effective_date"] = df["effective_date"].astype(str).str.strip()
+
+        # Check if the model is requesting the entire history
+        if not effective_date or effective_date.lower().strip() in ["all", "history", "none", "null"]:
+            # Convert the entire dataframe to a compact list of dicts
+            records = df.to_dict(orient="records")
+            return json.dumps(records)
         
         # Match exact date
         target_date = effective_date.strip()
@@ -273,7 +280,7 @@ def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> str:
     """Routes execution calls to the appropriate cleaned Python functions."""
     try:
         if tool_name == "query_rba_cash_rate":
-            return query_rba_cash_rate(arguments.get("effective_date", ""))
+            return query_rba_cash_rate(arguments.get("effective_date"))
         elif tool_name == "query_asx_prices":
             return query_asx_prices(arguments.get("ticker", ""), arguments.get("date", ""))
         elif tool_name == "query_afr_news":
@@ -295,18 +302,65 @@ def reasoning_planner(state: AgentState) -> Dict[str, Any]:
     context = state["context"]
     loop_count = state.get("loop_count", 0)
 
-    system_prompt = (
-        "You are an expert financial planning assistant. You have access to three local database tools:\n\n"
-        "1. query_rba_cash_rate(effective_date: str) -> Expects YYYY-MM-DD\n"
-        "2. query_asx_prices(ticker: str, date: str) -> Expects clean ticker (e.g., 'AGL') and date as YYYY-MM-DD\n"
-        "3. query_afr_news(query: str, date_filter: str) -> Searches news, optional date as YYYY-MM-DD\n\n"
-        "Instructions:\n"
-        "- All dates used as arguments must be in YYYY-MM-DD format.\n"
-        "- Use clean tickers (no '.AX' suffix).\n"
-        "- If you have gathered all necessary context to answer the user's question, output: 'DECISION: READY'\n"
-        "- If you need more information, output exactly one tool call in this format:\n"
-        "CALL: tool_name|arg1=val1,arg2=val2"
-    )
+    system_prompt = system_prompt = (
+    "You are an expert financial planning assistant. You have access to three local database tools:\n\n"
+    "1. query_rba_cash_rate(effective_date: str) -> Expects YYYY-MM-DD. "
+    "   IMPORTANT: If a question requires counting, scanning, or identifying historical trends across "
+    "   the entire dataset, pass effective_date=all to retrieve the full history.\n"
+    "2. query_asx_prices(ticker: str, date: str) -> Expects clean ticker (e.g., 'AGL') and date as YYYY-MM-DD\n"
+    "3. query_afr_news(query: str, date_filter: str) -> Searches news, optional date as YYYY-MM-DD\n\n"
+    
+    "CRITICAL INSTRUCTIONS:\n"
+    "- You must think step-by-step before taking an action. Write your step-by-step plan inside <thinking>...</thinking> tags.\n"
+    "- Following the thinking block, you must output exactly one action line: either a tool CALL or a final DECISION.\n"
+    "- Do not write any conversational filler outside the <thinking> block.\n\n"
+    
+    "EXAMPLES:\n\n"
+    
+    "Example 1: Analyzing the entire history (Easy/Aggregate)\n"
+    "User Question: From the first RBA record to the last, how many cash-rate decisions changed the rate, and how many were increases versus decreases?\n"
+    "Assistant Output:\n"
+    "<thinking>\n"
+    "1. The user is asking for aggregate statistics (counts of changes, increases, and decreases) over the entire historical range of the RBA dataset.\n"
+    "2. This cannot be solved with a point-lookup of a single date.\n"
+    "3. I must retrieve the complete RBA history to allow the synthesis model to perform the counts.\n"
+    "4. I will call the RBA tool with effective_date=all.\n"
+    "</thinking>\n"
+    "CALL: query_rba_cash_rate|effective_date=all\n\n"
+    
+    "Example 2: Analyzing a specific temporal range (Medium/Cycle)\n"
+    "User Question: Across the 2011-2013 easing period, how many cuts occurred and how far did the target fall?\n"
+    "Assistant Output:\n"
+    "<thinking>\n"
+    "1. The user wants to analyze a specific temporal window (2011-2013 easing period).\n"
+    "2. To count the cuts and identify the start/end rate targets over this period, I must inspect the historical sequence of records.\n"
+    "3. Retrieving the complete RBA dataset is the most reliable way to let the synthesis engine filter, count, and sum target movements between 2011 and 2013.\n"
+    "4. I will call the RBA tool with effective_date=all.\n"
+    "</thinking>\n"
+    "CALL: query_rba_cash_rate|effective_date=all\n\n"
+    
+    "Example 3: Querying the AFR news on a specific event\n"
+    "User Question: What were the key points of the coroner's decision regarding the Downer EDI inquest mentioned in early 2015?\n"
+    "Assistant Output:\n"
+    "<thinking>\n"
+    "1. The user is asking about a specific news event involving Downer EDI and a coroner's decision in early 2015.\n"
+    "2. I need to search the AFR news corpus for relevant articles using keywords like 'Downer EDI' and 'coroner' or 'Alec Meikle'.\n"
+    "3. I will call the query_afr_news tool with an appropriate query string.\n"
+    "</thinking>\n"
+    "CALL: query_afr_news|query=Downer EDI coroner\n\n"
+    
+    "Example 4: Ready to Synthesize\n"
+    "User Question: From the first RBA record to the last, how many cash-rate decisions changed the rate, and how many were increases versus decreases?\n"
+    "Accumulated Data Context:\n"
+    "[{\"effective_date\": \"2010-02-03\", \"change_pct\": 0.00, \"cash_rate_target\": 3.75, \"change_bps\": 0}, ... (all 175 records present)]\n"
+    "Assistant Output:\n"
+    "<thinking>\n"
+    "1. I have successfully retrieved the entire RBA dataset, which contains all 175 historical record rows.\n"
+    "2. The synthesis model has sufficient context to count the non-zero changes and segment them into increases (positive changes) and decreases (negative changes).\n"
+    "3. No more tool queries are required. I will transition to the synthesis phase.\n"
+    "</thinking>\n"
+    "DECISION: READY"
+)
 
     user_message = f"User Question: {question}\n\nAccumulated Data Context:\n{context}\n\nDetermine the next step."
 
