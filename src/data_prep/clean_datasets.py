@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Clean RBA/ASX/AFR raw data into a training-only corpus for Nemotron fine-tuning.
 
-Read-only against 'data set/'. Never writes there. Output goes to training/data/clean/.
+Read-only against 'data_set2/raw/'. Never writes there. Output goes to data_set2/cleaned/.
 This cleaned copy is for the FINE-TUNING PIPELINE ONLY. The runtime query_data tool
 (G3's job, src/) must keep reading the raw files at full precision -- grading tolerance
 on ASX closes is +/-0.0001, rounding here would blow past that if reused at runtime.
@@ -10,7 +10,7 @@ See TEAM_PLAN.md phase 1 (G1) and Sonali_plan.md for the reasoning behind these 
 
 Usage:
     python src/data_prep/clean_datasets.py
-    python src/data_prep/clean_datasets.py --out-dir training/data --skip-validate
+    python src/data_prep/clean_datasets.py --out-dir data_set2 --skip-validate
 """
 
 import argparse
@@ -21,9 +21,10 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-RAW_RBA = ROOT / "data set" / "RBA Rates" / "RBA-rates.jsonl"
-RAW_ASX_DIR = ROOT / "data set" / "ASX"
-RAW_AFR_DIR = ROOT / "data set" / "AFR"
+RAW_ROOT = ROOT / "data_set2" / "raw"
+RAW_RBA = RAW_ROOT / "RBA Rates" / "RBA-rates.jsonl"
+RAW_ASX_DIR = RAW_ROOT / "ASX"
+RAW_AFR_DIR = RAW_ROOT / "AFR"
 
 RBA_DATE_FMT_IN = "%d %b %Y"
 SOFT_HYPHEN = "\xad"
@@ -61,7 +62,7 @@ def clean_rba(clean_root: Path):
             "change_bps": round(change_pct * 100),  # x100, NOT x10000 -- check the math yourself
             "cash_rate_target_pct": float(rec["Cash rate target%"]),
         })
-    out_path = clean_root / "rba_clean.jsonl"
+    out_path = clean_root / "RBA Rates" / RAW_RBA.name
     write_jsonl(out_path, rows)
     print(f"[1/4] rba clean  -> {out_path}  ({len(rows)} rows)")
 
@@ -161,12 +162,13 @@ def validate(clean_root: Path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--out-dir", default=str(ROOT / "training" / "data"),
-                         help="output root for cleaned data (default: training/data)")
+    parser.add_argument("--out-dir",
+                         default=str(ROOT / "data_set2"),
+                         help="output root for cleaned data (default: data_set2)")
     parser.add_argument("--skip-validate", action="store_true")
     args = parser.parse_args()
 
-    clean_root = Path(args.out_dir) / "clean"
+    clean_root = Path(args.out_dir) / "cleaned"
     clean_root.mkdir(parents=True, exist_ok=True)
 
     clean_rba(clean_root)
@@ -177,8 +179,9 @@ def main():
         validate(clean_root)
 
     print(f"\nDone. Cleaned training corpus: {clean_root}")
-    print("Reminder: training-only. Runtime query_data tool reads 'data set/' raw, full precision.")
+    print("Reminder: training-only. Runtime query_data tool reads 'data_set2/raw', full precision.")
 
 
 if __name__ == "__main__":
     main()
+
