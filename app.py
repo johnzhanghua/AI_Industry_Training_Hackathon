@@ -1,3 +1,4 @@
+import logging
 import os
 
 from fastapi import FastAPI, HTTPException
@@ -5,8 +6,20 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 
 from src.agent import run_financial_agent
+from src.tracing import LANGSMITH_PROJECT, TRACING_ENABLED
+
+logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+def log_tracing_status():
+    if TRACING_ENABLED:
+        logger.info("LangSmith tracing ON -- project=%s", LANGSMITH_PROJECT)
+    else:
+        logger.info("LangSmith tracing OFF (set LANGSMITH_TRACING and LANGSMITH_API_KEY)")
 
 # Input Schema for the POST request
 class QueryRequest(BaseModel):

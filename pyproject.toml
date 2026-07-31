@@ -26,6 +26,7 @@ dependencies = [
     "pydantic", # Data validation for states and API payloads
     "python-dotenv", # For loading API keys and local endpoint configurations
     "pandas>=2.3.3",
+    "langsmith", # Optional run tracing for the agent graph, tools, and LLM calls
 ]
 
 [project.optional-dependencies]
