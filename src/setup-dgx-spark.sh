@@ -9,7 +9,7 @@
 #   2. Prompt for your NGC API key and log in to nvcr.io
 #   3. Install Miniforge if conda is missing, create the `llm-eval-workshop` env
 #      (Python 3.12), install all deps, and register its Jupyter kernel
-#   4. Launch the Nemotron Nano 9B NIM on localhost:8000 (or reuse a running one)
+#   4. Launch the Nemotron Nano 9B NIM on localhost:8001 (or reuse a running one)
 #   5. Wait for the NIM to become healthy
 #   6. Pull the NeMo AutoModel container image (for nb 03)
 #   7. Run live NIM, evaluator, Jupyter, and GPU-container smoke tests
@@ -30,7 +30,7 @@ set -Eeuo pipefail
 # ── Configuration (override via env vars) ─────────────────────────────────────
 NIM_IMAGE="${NIM_IMAGE:-nvcr.io/nim/nvidia/nvidia-nemotron-nano-9b-v2-dgx-spark:latest}"
 NIM_CONTAINER="${NIM_CONTAINER:-nemotron-nano}"
-NIM_PORT="${NIM_PORT:-8000}"
+NIM_PORT="${NIM_PORT:-8001}"
 NIM_CACHE="${NIM_CACHE:-$HOME/.cache/nim}"
 AUTOMODEL_IMAGE="${AUTOMODEL_IMAGE:-nvcr.io/nvidia/nemo-automodel:26.06}"
 WORKSHOP_ENV="${WORKSHOP_ENV:-llm-eval-workshop}"
