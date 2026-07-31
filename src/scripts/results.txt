@@ -1,0 +1,84 @@
+nel, version 0.3.0
+
+============================================================
+  Benchmark 1/1: nel_benchmarks/fin_qa_similarity.py:fin-qa-ungrounded
+============================================================
+NIM_HOST = http://localhost:4000 | MODEL_ID = domain-ft
+data dir = data
+questions = ../../Participant_Package/public_questions.jsonl (exists: True )
+nel      = /home/cognitivo_g03/miniforge3/envs/llm-eval-workshop/bin/nel
+Available models: ['agent-brain', 'domain-ft']
+Evaluating model: domain-ft
+→ /home/cognitivo_g03/miniforge3/envs/llm-eval-workshop/bin/nel --version 
+
+Loaded 15 public questions
+    id difficulty    datasets  scope  components
+MHQ001       easy         RBA single           1
+MHQ035     medium         RBA single           2
+MHQ040       easy         ASX single           1
+MHQ045     medium         ASX single           2
+MHQ049     medium         ASX single           1
+MHQ055       hard         ASX single           3
+MHQ058       easy     RBA,AFR  cross           3
+MHQ061     medium         AFR single           2
+MHQ067       hard     RBA,AFR  cross           3
+MHQ072     medium     RBA,ASX  cross           3
+MHQ074       hard     RBA,ASX  cross           4
+MHQ076       easy     ASX,AFR  cross           1
+MHQ080     medium RBA,ASX,AFR  cross           5
+MHQ084     medium RBA,ASX,AFR  cross           3
+MHQ090       hard RBA,ASX,AFR  cross           3
+{'schema_version': '2.0',
+ 'evaluation_version': 'part1-v3',
+ 'id': 'MHQ001',
+ 'part': 1,
+ 'verification_status': 'verified',
+ 'visibility': 'public',
+ 'difficulty': 'easy',
+ 'datasets': ['RBA'],
+ 'dataset_scope': 'single',
+ 'prompt': 'From the first RBA record to the last, how many cash-rate '
+           'decisions changed the rate, and how many were increases versus '
+           'decreases?',
+ 'reference_answer': '41 of the 175 decision records changed the rate: 20 '
+                     'increases and 21 decreases.',
+ 'derivation_methodology': 'Parse RBA-rates.csv. Count rows where Change % '
+                           'points is not 0.00, then split those rows by '
+                           'positive and negative sign.',
+ 'scoring_notes': 'Full credit requires all three numbers: 41 total changes, '
+                  '20 increases, 21 decreases.',
+ 'required_facts': ['41 of the 175 decision records changed the rate: 20 '
+                    'increases and 21 decreases.'],
+ 'grading': {'status': 'approved',
+             'method': 'component_based',
+             'max_score': 10,
+             'components': [{'component_id': 'C01',
+                             'expected_fact': '41 of the 175 decision records '
+                                              'changed the rate: 20 increases '
+                                              'and 21 decreases.',
+                             'points': 10.0}],
+             'tolerance_note': 'Exact values are required for dates, counts, '
+                               'labels, rankings, rates, and stated numeric '
+                               'results. Commas, trailing zeros, and '
+                               'equivalent date formats are accepted.',
+             'partial_credit': {'enabled': False,
+                                'rule': 'No separate hard-question '
+                                        'partial-answer schedule is required '
+                                        'for this case.',
+                                'partial_answers': []}},
+ 'source_html_path': 'Cognitivo_Training/Dataset/Mock_Hackathon_Question_Bank.html',
+ 'source_html_sha256': 'a62f3615d6a582c82503636503147c3da1b8015b69d7db10527c3cb380fc593c'}
+--- ungrounded ---
+Question: From the first RBA record to the last, how many cash-rate decisions changed the rate, and how many were increases versus decreases?
+Answer:
+
+--- grounded ---
+Verified facts returned by upstream data-query/retrieval tools:
+- 41 of the 175 decision records changed the rate: 20 increases and 21 decreases.
+(Tolerance: Exact values are required for dates, counts, labels, rankings, rates, and stated numeric results. Commas, trailing zeros, and equivalent date formats are accepted.)
+
+Question: From the first RBA record to the last, how many cash-rate decisions changed the rate, and how many were increases versus decreases?
+Answer:
+Wrote 15 rows x 2 conditions to ['data/fin-qa-eval-ungrounded.jsonl', 'data/fin-qa-eval-grounded.jsonl', 'data/fin-qa-judge-ungrounded.jsonl', 'data/fin-qa-judge-grounded.jsonl']
+→ /home/cognitivo_g03/miniforge3/envs/llm-eval-workshop/bin/nel eval run --bench nel_benchmarks/fin_qa_similarity.py:fin-qa-ungrounded --model-url http://localhost:4000/v1/chat/completions --model-id domain-ft --api-key dummy --max-tokens 256 --output-dir results/sim_ungrounded --max-problems 15 
+

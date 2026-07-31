@@ -1,0 +1,10 @@
+{
+  "run_id": "20260731_043026_f9c1d0fd",
+  "executor": "local",
+  "output_dir": "/home/cognitivo_g03/projects/AI_Industry_Training_Hackathon/src/scripts/results/judge_ungrounded",
+  "started_at": "2026-07-31T04:30:26.238741+00:00",
+  "config_summary": "nel_benchmarks/fin_qa_judge.py:fin-qa-judge-ungrounded",
+  "details": {
+    "pid": 320024
+  }
+}

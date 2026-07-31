@@ -1,0 +1,8 @@
+{
+  "completed_benchmarks": {
+    "nel_benchmarks/fin_qa_judge.py:fin-qa-judge-grounded": {
+      "bundle_path": "results/judge_grounded/fin-qa-judge-grounded"
+    }
+  },
+  "failed_benchmarks": {}
+}

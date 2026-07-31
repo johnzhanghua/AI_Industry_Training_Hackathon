@@ -1,0 +1,66 @@
+services:
+  solver:
+    type: api
+    url: http://localhost:4000/v1/chat/completions
+    protocol: chat_completions
+    model: domain-ft
+    api_key: dummy
+  judge:
+    type: api
+    url: http://localhost:4000/v1/chat/completions
+    protocol: chat_completions
+    model: domain-ft
+    api_key: dummy
+sandboxes:
+  none:
+    type: none
+benchmarks:
+- name: nel_benchmarks/fin_qa_judge.py:fin-qa-judge-grounded
+  solver:
+    type: simple
+    service: solver
+    system_prompt: detailed thinking off
+  max_problems: 15
+  sandbox:
+    type: none
+  scoring:
+    include_defaults: true
+    metrics:
+    - type: judge
+      name: quality
+      service: judge
+      reference_free: false
+      allow_self_judge: true
+      max_score: 10
+      system_prompt: 'detailed thinking off
+
+        Reply only with the JSON object.'
+      rubric: 'You are grading a candidate ANSWER against the official Cognitivo Hackathon
+        component-based rubric.
+
+        {instruction}
+
+        Candidate answer to grade:
+
+        {response}
+
+        {reference_section}
+
+        The reference above is a JSON object with an `expected_facts` list (each entry
+        has an `expected_fact` and its `points`), a `max_score`, and a `tolerance_note`.
+
+        For every entry in `expected_facts`, decide whether the candidate answer states
+        that fact. Accept equivalent date formats, harmless numeric formatting differences,
+        and synonyms that preserve meaning, honoring `tolerance_note`. A fact fails
+        if it is missing, contradicted, or replaced with an invented value.
+
+        Sum the `points` of every satisfied fact into a single total out of `max_score`.
+
+        Reply with only a JSON object: {{"score": <total out of max_score>, "reasoning":
+        "<which facts matched or failed, briefly>"}}'
+  params: {}
+cluster:
+  type: local
+output:
+  dir: results/judge_grounded
+  timestamped: false

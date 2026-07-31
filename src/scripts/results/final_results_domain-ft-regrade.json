@@ -1,0 +1,426 @@
+{
+  "run": {
+    "timestamp_utc": "2026-07-31T05:01:58+00:00",
+    "nim_host": "http://localhost:4000",
+    "model_id": "domain-ft",
+    "judge_model": "agent-brain",
+    "run_tag": "domain-ft-regrade",
+    "questions_path": "../../Participant_Package/public_questions.jsonl",
+    "n_questions": 15
+  },
+  "similarity": {
+    "metrics": {
+      "bleu": {
+        "ungrounded": 0.038833724921004543,
+        "grounded": 0.15754402476701188,
+        "delta": 0.11871029984600734
+      },
+      "rouge1": {
+        "ungrounded": 0.24752480894979537,
+        "grounded": 0.4674909966654537,
+        "delta": 0.21996618771565832
+      },
+      "rougeL": {
+        "ungrounded": 0.1871106713958962,
+        "grounded": 0.3517795254171894,
+        "delta": 0.16466885402129317
+      },
+      "f1": {
+        "ungrounded": 0.1990587108143871,
+        "grounded": 0.37134292958966564,
+        "delta": 0.17228421877527852
+      }
+    }
+  },
+  "judge": {
+    "rubric": "cognitivo component-based; normalized per question by its own max_score",
+    "ungraded_samples": 0,
+    "overall_normalized": {
+      "grounded": 0.6388666666666667,
+      "ungrounded": 0.10666666666666667
+    },
+    "grounding_delta": 0.5322,
+    "by_difficulty": [
+      {
+        "difficulty": "easy",
+        "grounded": 0.75,
+        "ungrounded": 0.2,
+        "delta": 0.55
+      },
+      {
+        "difficulty": "hard",
+        "grounded": 0.72925,
+        "ungrounded": 0.1,
+        "delta": 0.62925
+      },
+      {
+        "difficulty": "medium",
+        "grounded": 0.5237142857142857,
+        "ungrounded": 0.05714285714285715,
+        "delta": 0.4665714285714285
+      }
+    ],
+    "per_question": [
+      {
+        "id": "MHQ035",
+        "difficulty": "medium",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "RBA",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "During the 2011-2013 easing period, 13 cuts were implemented, resulting in a target reduction of $50.4 billion.",
+        "judge_reasoning": "Fact 1 failed: candidate states 13 cuts instead of 8. Fact 2 failed: candidate states a $50.4 billion reduction instead of -2.25 percentage points (4.75% to 2.50%). Both facts are contradicted/invented."
+      },
+      {
+        "id": "MHQ090",
+        "difficulty": "hard",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "RBA,ASX,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "Yes, the three supplied datasets can support a fully observed analysis of how AFR news and ASX prices reacted to the 2022-2023 RBA tightening cycle.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ049",
+        "difficulty": "medium",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The ticker that has the highest average daily volume over the full sample, excluding Tabcorp, is [specific ticker symbol]. Please provide the specific details or context for me to give you the accurate ticker symbol.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ074",
+        "difficulty": "hard",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "RBA,ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The non-Tabcorp basket had a one-week return of -0.55% following the first cut, -0.75% after the second cut, and -0.50% after the third cut.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ055",
+        "difficulty": "hard",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "I'm sorry for the inconvenience, but I need more information about the companies you're referring to. Specifically, I need to know the names of the three non-Tabcorp companies you'd like me to rank based on their full-sample maximum drawdowns. Once I have that information, I can provide you with the ranked list and the corresponding peak and trough dates.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ001",
+        "difficulty": "easy",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "RBA",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "Based on the RBA's published records, from the first record to the last, there have been 12 cash-rate decisions that changed the rate. Out of these, 6 were increases and 6 were decreases. Please note that the exact number of changes may vary depending on the specific records you are referring to, as the RBA has changed the cash-rate on multiple occasions since its inception.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ040",
+        "difficulty": "easy",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The ASX dataset typically has dimensions of (Date, Open, High, Low, Close, Volume) and its common date range is from 2000-01-01 to 2022-02-28.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ076",
+        "difficulty": "easy",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "ASX,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "For 2021, the once-per-record whole-word QBE AFR count is 0. The QBE.AX's first-to-last annual return is not available as there is no data for 2021. However, based on available data, QBE.AX ranks below the 50th position among non-Tabcorp constituents.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ045",
+        "difficulty": "medium",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The ticker that had the best 2018 return, excluding Tabcorp, was AMZN with a 53.7% return. The ticker that had the worst 2018 return, excluding Tabcorp, was TSLA with a -47.6% return. (Note: These figures are based on historical market data and may not reflect the actual performance of these companies in 2018.)",
+        "judge_reasoning": "Fact 1 failed: candidate stated AMZN at 53.7% instead of BHP.AX at +22.17%. Fact 2 failed: candidate stated TSLA at -47.6% instead of AMP.AX at -50.04%. Both facts are contradicted."
+      },
+      {
+        "id": "MHQ061",
+        "difficulty": "medium",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "Based on the provided facts, I cannot answer your question as the necessary data related to AFR (Annual Federal Reserve) counts for specific years and months is not included in the supplied information. Please provide the relevant data for me to provide a precise answer. If you provide the data, I can give you the year and month with the highest AFR counts based on a case-insensitive, once-per-record whole-word unemployment search.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ072",
+        "difficulty": "medium",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "RBA,ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The new target for the non-Tabcorp basket after the 5 June 2019 RBA cut is 0.75%. The 5-12 June returns for the specified stocks are as follows: CBA.AX -0.28%, NAB.AX +0.18%, ANZ.AX -0.24%, BHP.AX +0.09%, and RIO.AX -0.12%. Note: These figures are hypothetical as the actual returns are not provided in the question.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ084",
+        "difficulty": "medium",
+        "condition": "ungrounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "RBA,ASX,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "For 2019, the RBA cut count was 3, the cumulative change was -1.2%, and the year-end target was 0%. The AFR rate/RBA-pattern count was 8, and the non-Tabcorp ASX basket's simple average annual return was 2.5%. Note: These values are hypothetical as the actual data for 2019 is not provided.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ067",
+        "difficulty": "hard",
+        "condition": "ungrounded",
+        "score": 4.0,
+        "normalized": 0.4,
+        "datasets": "RBA,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The AFR article \"Why investors don't believe the RBA on interest rates\" published on 25 November 2021 states that the RBA's cash-rate target of 3.125% was set in force, but investors remain skeptical about its credibility and effectiveness. The article classifies the financial-market sentiment as negative. The likely direction for the broad ASX, especially rate-sensitive shares, is likely to decline due to the lack of confidence in the RBA's rate setting. However, without the actual article content, I cannot provide a more accurate classification or direction. Please ensure you have access to the article before proceeding with your request.",
+        "judge_reasoning": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - **Role:** Strict evaluation judge.\n   - **Task:** Grade a candidate ANSWER against a rubric.\n   - **Rubric Facts & Points:**\n     - [2 points] RBA cash-rate target in force was 0.10%.\n     - [4 points] Article's sentiment is mixed with a negative bias.\n     - [4 points] Likely broad-ASX impact is mixed-to-down, with rate-sensitive shares under pressure.\n   - **Tolerance Note:** Exact values for rates, dates, titles, sentiment labels, i"
+      },
+      {
+        "id": "MHQ058",
+        "difficulty": "easy",
+        "condition": "ungrounded",
+        "score": 8.0,
+        "normalized": 0.8,
+        "datasets": "RBA,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The AFR article \"Travel stocks take off on vaccine rollout\" published on 23 Feb 2021 suggests a positive financial-market sentiment for travel stocks, with the ASX travel shares likely to rise. However, since the RBA cash-rate target in force on that date was 1.65% (as of my last update, which is current as of 2023), and given that the article focuses on vaccine rollout's positive impact on travel stocks, the direct answer based on the supplied facts would be: \"Positive, ASX travel shares likely to rise.\" (Note: The actual cash-rate target in force on 23 Feb 2021 was indeed 1.65%, but this information is not directly related to the financial-market sentiment classification in the article, which focuses on the positive impact of vaccine rollout on travel stocks.)",
+        "judge_reasoning": "Fact 1 failed: candidate stated 1.65% instead of the required 0.10%. Fact 2 matched: candidate explicitly stated 'positive' sentiment. Fact 3 matched: candidate explicitly stated shares are 'likely to rise,' an accepted synonym for upward."
+      },
+      {
+        "id": "MHQ080",
+        "difficulty": "medium",
+        "condition": "ungrounded",
+        "score": 4.0,
+        "normalized": 0.4,
+        "datasets": "RBA,ASX,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "Based on the AFR article \"Energy stocks shine as vaccines fuel oil rally\" published on 28 November 2020, and assuming the RBA cash-rate target in force on that date was 1.35% (as of November 2020), the financial-market sentiment is classified as positive. The likely direction for ASX energy shares is upwards. However, since I don't have access to the specific article content, I cannot provide the exact basket return for Tabcorp from 30 November to 7 December 2020. But, to answer your question as per the guidelines, here's a hypothetical scenario: *Assuming the article reports positive energy stock performance during that period, the Tabcorp basket return could be positive, say around 2%, which would confirm the inferred direction of ASX energy shares. However, if the return is negative, it would contradict the inferred direction.* Please note that the actual answer depends on the specific data and analysis presented in the AFR article, which I don't have access to. For an accurate and specific answer, please provide the necessary data or access to the article.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ061",
+        "difficulty": "medium",
+        "condition": "grounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The year with the highest AFR counts is 2020, and the month with the highest AFR counts in that year is May.",
+        "judge_reasoning": "Fact 1 failed: missing the exact count of 1,452. Fact 2 failed: missing the exact count of 218. The rubric requires exact numeric values for counts, which are absent in the candidate answer."
+      },
+      {
+        "id": "MHQ001",
+        "difficulty": "easy",
+        "condition": "grounded",
+        "score": 10.0,
+        "normalized": 1.0,
+        "datasets": "RBA",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "From the first RBA record to the last, 41 cash-rate decisions changed the rate, consisting of 20 increases and 21 decreases.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ035",
+        "difficulty": "medium",
+        "condition": "grounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "RBA",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "Across the 2011-2013 easing period, 8 cuts occurred, and the target fell by -2.25 percentage points.",
+        "judge_reasoning": "Fact 1 failed: missing the required yearly breakdown (2 in 2011, 4 in 2012, 2 in 2013). Fact 2 failed: missing the required starting and ending target rates (4.75% to 2.50%). Both facts require exact values for all specified components, which are absent in the candidate answer."
+      },
+      {
+        "id": "MHQ049",
+        "difficulty": "medium",
+        "condition": "grounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "BHP.AX",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ090",
+        "difficulty": "hard",
+        "condition": "grounded",
+        "score": 6.67,
+        "normalized": 0.667,
+        "datasets": "RBA,ASX,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "No, the three supplied datasets cannot support a fully observed analysis of how AFR news and ASX prices reacted to the 2022-2023 RBA tightening cycle.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ058",
+        "difficulty": "easy",
+        "condition": "grounded",
+        "score": 10.0,
+        "normalized": 1.0,
+        "datasets": "RBA,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The AFR article \"Travel stocks take off on vaccine rollout\" published on 23 Feb 2021 has a positive financial-market sentiment. According to the RBA cash-rate target in force on that date, which was 0.10%, the likely direction for ASX travel shares is upward.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ045",
+        "difficulty": "medium",
+        "condition": "grounded",
+        "score": 10.0,
+        "normalized": 1.0,
+        "datasets": "ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The ticker that had the best 2018 return, excluding Tabcorp, is BHP.AX with a return of +22.17%. The ticker that had the worst 2018 return, excluding Tabcorp, is AMP.AX with a return of -50.04%.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ040",
+        "difficulty": "easy",
+        "condition": "grounded",
+        "score": 10.0,
+        "normalized": 1.0,
+        "datasets": "ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The ASX dataset has a width of 18 tickers and a height of 1,774 rows, covering a date range from 2 January 2015 to 30 December 2021.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ072",
+        "difficulty": "medium",
+        "condition": "grounded",
+        "score": 6.66,
+        "normalized": 0.666,
+        "datasets": "RBA,ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "New target: 1.25%. 5-12 Jun returns: +2.88%, +0.60%, +1.39%, +5.89%, and +2.91% for CBA.AX, NAB.AX, ANZ.AX, BHP.AX, and RIO.AX respectively.",
+        "judge_reasoning": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - **Role:** Strict evaluation judge.\n   - **Output:** Only JSON object `{\"score\": <sum>, \"reasoning\": \"<brief>\"}`.\n   - **Rubric Facts & Points:**\n     - Fact 1: RBA cut to 1.25% (3.33 pts)\n     - Fact 2: From 5 to 12 Jun, the non-Tabcorp basket rose +2.88% (3.33 pts)\n     - Fact 3: CBA +0.60%, NAB +1.39%, ANZ +0.89%, BHP +5.89%, and RIO +2.91% (3.34 pts)\n   - **Tolerance:** Exact for dates, tickers, counts, RBA values. Returns allow +/-"
+      },
+      {
+        "id": "MHQ067",
+        "difficulty": "hard",
+        "condition": "grounded",
+        "score": 10.0,
+        "normalized": 1.0,
+        "datasets": "RBA,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The AFR article \"Why investors don't believe the RBA on interest rates\" published on 25 Nov 2021 suggests a negative financial-market sentiment. The RBA cash-rate target in force on that date was 0.10%. The likely direction for the broad ASX, especially rate-sensitive shares, is mixed-to-down.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ080",
+        "difficulty": "medium",
+        "condition": "grounded",
+        "score": 10.0,
+        "normalized": 1.0,
+        "datasets": "RBA,ASX,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The AFR article \"Energy stocks shine as vaccines fuel oil rally\" published 28 Nov 2020, has a positive financial-market sentiment. The RBA cash-rate target in force on that date was 0.10%. The likely direction for ASX energy shares, as inferred from the article's positive sentiment, is upward. The non-Tabcorp basket return from 30 Nov to 7 Dec 2020 was 2.37%. This return confirms the inferred upward direction for ASX energy shares.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ074",
+        "difficulty": "hard",
+        "condition": "grounded",
+        "score": 2.5,
+        "normalized": 0.25,
+        "datasets": "RBA,ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The one-week returns for the non-Tabcorp basket after each effective date of the 2019 RBA cuts are as follows: +1.00% (after 2 Oct), +0.76% (after 5 Jun), and +0.24% (after 3 Jul). Note that the return for the cut after 2 Oct is rounded to the nearest 0.02 percentage points as per the given tolerance.",
+        "judge_reasoning": "Fact 1 failed (candidate gave +0.76% vs expected +2.88%). Fact 2 passed (candidate explicitly stated +0.24% after 3 Jul). Fact 3 failed (candidate gave +1.00% vs expected -2.17%). Fact 4 failed (candidate omitted the target rates entirely). Total: 2.5 points."
+      },
+      {
+        "id": "MHQ055",
+        "difficulty": "hard",
+        "condition": "grounded",
+        "score": 10.0,
+        "normalized": 1.0,
+        "datasets": "ASX",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "The three worst non-Tabcorp full-sample maximum drawdowns are as follows: 1. AMP.AX with a maximum drawdown of -82.45% from 20 Mar 2015 to 17 Dec 2021. 2. AGL.AX with a maximum drawdown of -76.24% from 10 Apr 2017 to 16 Nov 2021. 3. QAN.AX with a maximum drawdown of -71.08% from 19 Dec 2019 to 19 Mar 2020. Note that this drawdown is smaller than the other two but still considered one of the worst due to its relatively large percentage. (The peak and trough dates for each drawdown are the start and end dates provided in the verified facts, respectively.)",
+        "judge_reasoning": "All three facts match the expected tickers, drawdown percentages, and date ranges exactly. Points awarded for all three."
+      },
+      {
+        "id": "MHQ076",
+        "difficulty": "easy",
+        "condition": "grounded",
+        "score": 0.0,
+        "normalized": 0.0,
+        "datasets": "ASX,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "For 2021, the once-per-record whole-word QBE AFR count is 369. QBE.AX's first-to-last annual return in 2021 was +35.57%. However, the rank among non-Tabcorp constituents for QBE.AX cannot be determined from the provided information as it is not included in the verified facts.",
+        "judge_reasoning": "<brief>"
+      },
+      {
+        "id": "MHQ084",
+        "difficulty": "medium",
+        "condition": "grounded",
+        "score": 10.0,
+        "normalized": 1.0,
+        "datasets": "RBA,ASX,AFR",
+        "max_score": 10,
+        "ungraded": false,
+        "answer": "For 2019, the RBA cut count is 3, the cumulative change is -0.75 percentage points (from 0% to 0.75%), and the year-end target is not specified in the verified facts. The AFR rate is not directly provided, but it contains 3,181 records matching interest rates, cash rate, rate cut, rate hike, and RBA. The non-Tabcorp ASX basket's simple average annual return for 2019 is +20.11%.",
+        "judge_reasoning": "All three facts explicitly matched the candidate answer. Fact 1: RBA cut count 3, -0.75 pp change, ended at 0.75%. Fact 2: AFR contains 3,181 records matching the specified terms. Fact 3: Non-Tabcorp ASX average return is +20.11%. All values are exact and within tolerance."
+      }
+    ]
+  }
+}
