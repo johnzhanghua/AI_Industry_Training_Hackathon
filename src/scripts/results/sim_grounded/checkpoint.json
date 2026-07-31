@@ -1,0 +1,8 @@
+{
+  "completed_benchmarks": {
+    "nel_benchmarks/fin_qa_similarity.py:fin-qa-grounded": {
+      "bundle_path": "results/sim_grounded/fin-qa-grounded"
+    }
+  },
+  "failed_benchmarks": {}
+}

@@ -1,0 +1,10 @@
+{
+  "run_id": "20260731_043017_4ff5d9ae",
+  "executor": "local",
+  "output_dir": "/home/cognitivo_g03/projects/AI_Industry_Training_Hackathon/src/scripts/results/sim_grounded",
+  "started_at": "2026-07-31T04:30:17.464074+00:00",
+  "config_summary": "nel_benchmarks/fin_qa_similarity.py:fin-qa-grounded",
+  "details": {
+    "pid": 319964
+  }
+}

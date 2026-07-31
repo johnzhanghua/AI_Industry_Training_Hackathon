@@ -1,0 +1,75 @@
+{
+  "run_id": "eval-20260731T043112Z-fin-qa-judge-grounded",
+  "config_hash": "sha256:ec81ce5556bcca539c02ec8094c0972d3b24ed1583e207e47351d9f4e8bd6d1f",
+  "sdk_version": "0.3.0",
+  "timestamp": "2026-07-31T04:31:12.688728+00:00",
+  "config": {
+    "benchmark": "fin-qa-judge-grounded",
+    "model": "domain-ft",
+    "base_url": "http://127.0.0.1:40771",
+    "repeats": 1,
+    "max_problems": 15,
+    "scorers": null,
+    "_sandbox_config": "capture_cmd=None verify_timeout=600.0 stateful=False type='none'",
+    "shuffle_seed": 42,
+    "shuffle": {
+      "seed": 42,
+      "applied": true,
+      "ds_full_size": 15,
+      "ds_effective_size": 15
+    }
+  },
+  "benchmark": {
+    "name": "fin-qa-judge-grounded",
+    "samples": 15,
+    "repeats": 1,
+    "scores": {
+      "mean_reward": {
+        "value": 0.9555,
+        "ci_lower": 0.9152,
+        "ci_upper": 0.9909
+      },
+      "summary": {
+        "mean": 0.9554666666666668,
+        "std": 0.082321553041947,
+        "min": 0.8,
+        "max": 1.0,
+        "median": 1.0,
+        "n": 15
+      },
+      "runtime": {
+        "total_steps": 15,
+        "total_tokens": 4720,
+        "total_prompt_tokens": 3755,
+        "total_completion_tokens": 965,
+        "total_reasoning_tokens": 0,
+        "elapsed_seconds": 21.31,
+        "latency_percentiles_ms": {
+          "p50": 4327.6,
+          "p90": 7462.42,
+          "p99": 10759.83
+        },
+        "tokens_per_second": 221.51,
+        "steps_per_second": 0.7,
+        "model_errors": 0,
+        "total_retries": 0,
+        "finish_reason_counts": {
+          "stop": 15
+        }
+      },
+      "failures": {
+        "total_steps": 15,
+        "total_failures": 0,
+        "failure_rate": 0.0,
+        "categories": {}
+      }
+    },
+    "categories": {
+      "summarization": {
+        "mean_reward": 0.9555,
+        "n": 15
+      }
+    }
+  },
+  "n_results": 15
+}

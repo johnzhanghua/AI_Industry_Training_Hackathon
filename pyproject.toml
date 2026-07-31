@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "financial-market-agent"
+version = "0.1.0"
+description = "A LangGraph agent utilizing Qwen for planning and fine-tuned Nemotron-Nano for financial answer synthesis."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "team-atom", email = "team@example.com" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "langgraph", # Core agent graph orchestration framework
+    "litellm==1.40.0", # LLM gateway for Qwen-35B and Nemotron-Nano-8B
+    "fastapi", # API framework to serve the POST /query endpoint
+    "uvicorn", # ASGI server to run the FastAPI application
+    "pydantic", # Data validation for states and API payloads
+    "python-dotenv", # For loading API keys and local endpoint configurations
+    "pandas>=2.3.3",
+    "langsmith", # Optional run tracing for the agent graph, tools, and LLM calls
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",            # Standard testing framework
+    "black>=24.0.0",            # Code formatting
+    "isort>=5.13.0",            # Import sorting
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

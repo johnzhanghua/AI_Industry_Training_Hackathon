@@ -1,3 +1,20 @@
+# Credentials -- the submission repo must be fully public, so never commit these.
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# OS noise
+.DS_Store
 .venv/
 *.pyc
 __pycache__/

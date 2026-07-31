@@ -1,0 +1,39 @@
+services:
+  solver:
+    type: api
+    url: http://localhost:4000/v1/chat/completions
+    protocol: chat_completions
+    model: domain-ft
+    api_key: dummy
+  judge:
+    type: api
+    url: http://localhost:4000/v1/chat/completions
+    protocol: chat_completions
+    model: agent-brain
+    api_key: dummy
+sandboxes:
+  none:
+    type: none
+benchmarks:
+- name: nel_benchmarks/fin_qa_judge.py:fin-qa-judge-ungrounded
+  solver:
+    type: simple
+    service: solver
+    system_prompt: detailed thinking off
+  max_problems: 2
+  sandbox:
+    type: none
+  scoring:
+    include_defaults: true
+    metrics:
+    - type: judge
+      name: quality
+      service: judge
+      reference_free: false
+      allow_self_judge: false
+  params: {}
+cluster:
+  type: local
+output:
+  dir: /tmp/claude-1000/-home-cognitivo-g03-projects-AI-Industry-Training-Hackathon-src-scripts-results-judge-grounded/6af9824e-eef8-485c-80d6-8e086b080be9/scratchpad/smoke_judge
+  timestamped: false
