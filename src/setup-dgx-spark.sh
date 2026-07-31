@@ -28,8 +28,8 @@
 set -Eeuo pipefail
 
 # ── Configuration (override via env vars) ─────────────────────────────────────
-NIM_IMAGE="${NIM_IMAGE:-nvcr.io/nim/nvidia/nvidia-nemotron-nano-9b-v2-dgx-spark:latest}"
-NIM_CONTAINER="${NIM_CONTAINER:-nemotron-nano}"
+NIM_IMAGE="nvcr.io/nim/nvidia/llama-3.1-nemotron-nano-8b-v1:latest "
+NIM_CONTAINER="llama-31-nemotron-nano-8b"
 NIM_PORT="${NIM_PORT:-8001}"
 NIM_CACHE="${NIM_CACHE:-$HOME/.cache/nim}"
 AUTOMODEL_IMAGE="${AUTOMODEL_IMAGE:-nvcr.io/nvidia/nemo-automodel:26.06}"
