@@ -1,0 +1,51 @@
+import os
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List, Dict, Any
+
+from src.agent import run_financial_agent
+
+app = FastAPI()
+
+# Input Schema for the POST request
+class QueryRequest(BaseModel):
+    question: str
+
+# Output Schema matching the scoring requirements
+class QueryResponse(BaseModel):
+    answer: str
+    steps: int
+    tool_trace: List[Dict[str, Any]]
+
+@app.get("/health")
+async def health_endpoint():
+    """Liveness probe. The organizer harness skips the team if this is not HTTP 200."""
+    return {"status": "ok"}
+
+@app.post("/query", response_model=QueryResponse)
+async def query_endpoint(payload: QueryRequest):
+    try:
+        # Call the LangGraph execution endpoint
+        result = run_financial_agent(payload.question)
+        
+        return QueryResponse(
+            answer=result["answer"],
+            steps=result["steps"],
+            tool_trace=result["tool_trace"]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    # Bind on all interfaces so the organizer harness can reach the agent;
+    # the README's typical setup puts the agent on port 5000.
+    uvicorn.run(
+        "app:app",
+        host=os.getenv("AGENT_HOST", "0.0.0.0"),
+        port=int(os.getenv("AGENT_PORT", "5000")),
+        reload=bool(os.getenv("AGENT_RELOAD")),
+    )

@@ -1,0 +1,416 @@
+from typing import TypedDict, List, Dict, Any, Literal
+import json
+import litellm
+import pandas as pd
+import json
+import os
+import glob
+
+from langgraph.graph import StateGraph, START, END
+
+cwd_path = os.getcwd()
+CLEANED_RBA_PATH = cwd_path + "/data/rba_cash_rate_cleaned.csv"
+CLEANED_ASX_DIR = cwd_path + "/data/cleaned_asx"
+CLEANED_AFR_DIR = cwd_path + "/data/cleaned_afr"
+
+# Model Configurations
+QWEN_MODEL = "openai/qwen-3.6-35b-a3b-fp8"
+NEMOTRON_MODEL = "openai/llama-3.1-nemotron-nano-8b-v1"
+
+# --- 1. State Definition ---
+class AgentState(TypedDict):
+    question: str
+    plan: str
+    tool_calls: List[Dict[str, Any]]
+    tool_outputs: List[Dict[str, Any]]
+    context: str
+    final_answer: str
+    loop_count: int
+    max_loops: int
+    tool_trace: List[Dict[str, Any]]
+
+
+# --- 2. Aligned Mock Tools (Using Cleaned Schemas) ---
+def query_rba_cash_rate(effective_date: str) -> str:
+    """
+    Queries the cleaned local RBA CSV dataset.
+    :param effective_date: Date formatted as YYYY-MM-DD (e.g., '2010-03-03')
+    """
+    if not os.path.exists(CLEANED_RBA_PATH):
+        return f"Error: Cleaned RBA database file not found at {CLEANED_RBA_PATH}."
+
+    try:
+        # Load cleaned database
+        df = pd.read_csv(CLEANED_RBA_PATH)
+        
+        # Ensure effective_date column matches string-wise
+        df["effective_date"] = df["effective_date"].astype(str).str.strip()
+        
+        # Match exact date
+        target_date = effective_date.strip()
+        result_df = df[df["effective_date"] == target_date]
+        
+        if not result_df.empty:
+            record = result_df.iloc[0].to_dict()
+            
+            # Return serialized JSON string of the record
+            return json.dumps({
+                "effective_date": str(record["effective_date"]),
+                "cash_rate_target": float(record["cash_rate_target"]),
+                "change_pct": float(record["change_pct"]),
+                "change_bps": int(record["change_bps"])
+            })
+        else:
+            return f"No RBA decision found for date {effective_date}."
+
+    except Exception as e:
+        return f"Error accessing local RBA dataset: {str(e)}"
+
+# def query_rba_cash_rate(effective_date: str) -> str:
+#     """
+#     Search the RBA cash-rate dataset.
+#     :param effective_date: Date formatted as YYYY-MM-DD.
+#     """
+#     # Mock lookup using the standardized format we compiled
+#     if effective_date == "2010-02-03":
+#         record = {
+#             "effective_date": "2010-02-03",
+#             "cash_rate_target": 3.75,
+#             "change_pct": 0.00,
+#             "change_bps": 0
+#         }
+#         return json.dumps(record)
+#     return f"No RBA decision found for date {effective_date}."
+
+
+# def query_asx_prices(ticker: str, date: str) -> str:
+#     """
+#     Search the ASX historical price database.
+#     :param ticker: Cleaned stock ticker (e.g., 'AGL', not 'AGL.AX').
+#     :param date: Date formatted as YYYY-MM-DD.
+#     """
+#     # Mock lookup using the rounded, standardized format
+#     if ticker.upper() == "AGL" and date == "2015-01-02":
+#         record = {
+#             "ticker": "AGL",
+#             "date": "2015-01-02",
+#             "open": 7.63,
+#             "high": 7.63,
+#             "low": 7.48,
+#             "close": 7.55,
+#             "volume": 359519
+#         }
+#         return json.dumps(record)
+#     return f"No ASX prices found for {ticker} on {date}."
+
+def query_asx_prices(ticker: str, date: str) -> str:
+    """
+    Queries the partitioned local cleaned ASX dataset.
+    :param ticker: The stock ticker (e.g. 'IAG')
+    :param date: Date formatted as YYYY-MM-DD (e.g. '2015-01-02')
+    """
+    # Normalize ticker input to uppercase for filename matching
+    clean_ticker = ticker.strip().replace(".AX", "").replace(".ax", "").upper()
+    target_date = date.strip()
+    
+    # Path to the specific ticker file
+    ticker_file_path = os.path.join(CLEANED_ASX_DIR, f"{clean_ticker}.jsonl")
+    
+    if not os.path.exists(ticker_file_path):
+        return f"No ASX record found. Ticker '{clean_ticker}' does not exist in local dataset."
+
+    try:
+        # Stream-read only the specific ticker file line-by-line
+        with open(ticker_file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if not line.strip():
+                    continue
+                
+                record = json.loads(line)
+                if record.get("date") == target_date:
+                    # Return the exact matched clean row
+                    return json.dumps({
+                        "ticker": record["ticker"],
+                        "date": record["date"],
+                        "open": record["open"],
+                        "high": record["high"],
+                        "low": record["low"],
+                        "close": record["close"],
+                        "volume": record["volume"]
+                    })
+                    
+        return f"No stock prices found for ticker '{clean_ticker}' on date {target_date}."
+        
+    except Exception as e:
+        return f"Error reading ASX record for {clean_ticker}: {str(e)}"
+
+# def query_afr_news(query: str, date_filter: str = None) -> str:
+#     """
+#     Search the AFR news corpus for articles.
+#     :param query: Keywords or company names to search.
+#     :param date_filter: Optional publication date formatted as YYYY-MM-DD.
+#     """
+#     # Mock lookup returning cleaned text structures
+#     if "BC Iron" in query:
+#         record = {
+#             "headline": "BC Iron tips short-term price relief",
+#             "intro": "BC Iron managing director Morgan Ball says he expects the iron ore price to rebound...",
+#             "text": "BC Iron managing director... Nullagine joint venture shipped 1.38 million wet metric tonnes...",
+#             "newspaper": "Australian Financial Review",
+#             "publication_date": "2015-01-31"
+#         }
+#         return json.dumps(record)
+#     return f"No AFR news results for search: '{query}'."
+
+def query_afr_news(query: str, date_filter: str = None, max_results: int = 3) -> str:
+    """
+    Scans the cleaned local AFR news corpus folder for articles containing the query terms.
+    :param query: Search terms or company names (case-insensitive).
+    :param date_filter: Optional date filter formatted as YYYY-MM-DD.
+    :param max_results: Maximum number of matching articles to return to the agent.
+    """
+    if not os.path.exists(CLEANED_AFR_DIR):
+        return f"Error: Cleaned AFR directory not found at {CLEANED_AFR_DIR}."
+
+    search_terms = query.lower().strip().split()
+    if not search_terms:
+        return "Error: Empty search query provided."
+
+    target_files = glob.glob(os.path.join(CLEANED_AFR_DIR, "*.jsonl"))
+    matches = []
+
+    try:
+        for file_path in target_files:
+            if len(matches) >= max_results:
+                break
+
+            with open(file_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    
+                    record = json.loads(line)
+                    
+                    # 1. Apply Date Filter (if specified)
+                    if date_filter and record.get("publication_date") != date_filter.strip():
+                        continue
+
+                    # 2. Extract text fields for text searching
+                    headline = record.get("headline", "").lower()
+                    intro = record.get("intro", "").lower()
+                    text = record.get("text", "").lower()
+
+                    # 3. Perform term matching (logical AND for all terms in query)
+                    is_match = all(term in headline or term in intro or term in text for term in search_terms)
+
+                    if is_match:
+                        matches.append({
+                            "headline": record["headline"],
+                            "publication_date": record["publication_date"],
+                            "intro": record["intro"],
+                            "text": record["text"][:800] + "..." if len(record["text"]) > 800 else record["text"] # Truncate body text to conserve tokens
+                        })
+                        if len(matches) >= max_results:
+                            break
+
+        if matches:
+            return json.dumps(matches)
+        else:
+            date_info = f" on date {date_filter}" if date_filter else ""
+            return f"No AFR news articles found matching search query '{query}'{date_info}."
+
+    except Exception as e:
+        return f"Error searching AFR news database: {str(e)}"
+
+# --- 3. Dynamic Tool Router ---
+def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> str:
+    """Routes execution calls to the appropriate cleaned Python functions."""
+    try:
+        if tool_name == "query_rba_cash_rate":
+            return query_rba_cash_rate(arguments.get("effective_date", ""))
+        elif tool_name == "query_asx_prices":
+            return query_asx_prices(arguments.get("ticker", ""), arguments.get("date", ""))
+        elif tool_name == "query_afr_news":
+            return query_afr_news(arguments.get("query", ""), arguments.get("date_filter"))
+        else:
+            return f"Error: Tool '{tool_name}' not recognized."
+    except Exception as e:
+        return f"Error executing {tool_name}: {str(e)}"
+
+
+# --- 4. Graph Nodes ---
+
+def reasoning_planner(state: AgentState) -> Dict[str, Any]:
+    """
+    Qwen-35B acts as the planner. It is now explicitly instructed
+    to use the standardized ISO date formats and cleaned parameters.
+    """
+    question = state["question"]
+    context = state["context"]
+    loop_count = state.get("loop_count", 0)
+
+    system_prompt = (
+        "You are an expert financial planning assistant. You have access to three local database tools:\n\n"
+        "1. query_rba_cash_rate(effective_date: str) -> Expects YYYY-MM-DD\n"
+        "2. query_asx_prices(ticker: str, date: str) -> Expects clean ticker (e.g., 'AGL') and date as YYYY-MM-DD\n"
+        "3. query_afr_news(query: str, date_filter: str) -> Searches news, optional date as YYYY-MM-DD\n\n"
+        "Instructions:\n"
+        "- All dates used as arguments must be in YYYY-MM-DD format.\n"
+        "- Use clean tickers (no '.AX' suffix).\n"
+        "- If you have gathered all necessary context to answer the user's question, output: 'DECISION: READY'\n"
+        "- If you need more information, output exactly one tool call in this format:\n"
+        "CALL: tool_name|arg1=val1,arg2=val2"
+    )
+
+    user_message = f"User Question: {question}\n\nAccumulated Data Context:\n{context}\n\nDetermine the next step."
+
+    response = litellm.completion(
+        model=QWEN_MODEL,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message}
+        ],
+        temperature=0.0
+    )
+
+    response_text = response.choices[0].message.content
+    
+    # Tool parser
+    tool_calls = []
+    if "CALL:" in response_text:
+        try:
+            line = [l for l in response_text.split("\n") if "CALL:" in l][0]
+            parts = line.replace("CALL:", "").strip().split("|")
+            tool_name = parts[0].strip()
+            args = {}
+            if len(parts) > 1:
+                for pair in parts[1].split(","):
+                    if "=" in pair:
+                        k, v = pair.split("=")
+                        args[k.strip()] = v.strip()
+            tool_calls.append({"name": tool_name, "arguments": args})
+        except Exception:
+            pass  # Fallback handled by empty tool_calls array
+
+    return {
+        "plan": response_text,
+        "tool_calls": tool_calls,
+        "loop_count": loop_count + 1
+    }
+
+
+def execute_tools_node(state: AgentState) -> Dict[str, Any]:
+    """Executes tools and appends metadata to cumulative tool_trace."""
+    tool_calls = state["tool_calls"]
+    current_context = state["context"]
+    current_trace = state.get("tool_trace", []) or []
+
+    outputs = []
+    new_trace_entries = []
+
+    for call in tool_calls:
+        output = execute_tool(call["name"], call["arguments"])
+        outputs.append(output)
+        
+        # Capture trace metric
+        new_trace_entries.append({
+            "tool": call["name"],
+            "arguments": call["arguments"]
+        })
+        
+    combined_new_context = "\n".join(outputs)
+    updated_context = f"{current_context}\n{combined_new_context}".strip() if current_context else combined_new_context
+
+    return {
+        "tool_outputs": outputs,
+        "context": updated_context,
+        "tool_calls": [],  # Clear current queue
+        "tool_trace": current_trace + new_trace_entries
+    }
+
+
+def synthesis_node(state: AgentState) -> Dict[str, Any]:
+    """
+    Nemotron-Nano-8B synthesizes the final grounded answer.
+    It now parses standardized JSON structures effortlessly.
+    """
+    question = state["question"]
+    context = state["context"]
+
+    system_prompt = (
+        "You are an expert financial analysis synthesizer. Generate a direct, grounded answer "
+        "to the question based strictly on the provided context (which is formatted as JSON blocks)."
+    )
+
+    user_message = f"Context Blocks:\n{context}\n\nQuestion: {question}"
+
+    response = litellm.completion(
+        model=NEMOTRON_MODEL,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message}
+        ],
+        temperature=0.0
+    )
+
+    return {"final_answer": response.choices[0].message.content}
+
+
+# --- 5. Conditional Routing ---
+def router(state: AgentState) -> Literal["execute_tools", "synthesize_answer"]:
+    if state["loop_count"] >= state["max_loops"]:
+        return "synthesize_answer"
+    
+    plan = state.get("plan", "")
+    if "DECISION: READY" in plan or not state.get("tool_calls"):
+        return "synthesize_answer"
+        
+    return "execute_tools"
+
+
+# --- 6. Build the Graph Workflow ---
+workflow = StateGraph(AgentState)
+
+workflow.add_node("reasoning_planner", reasoning_planner)
+workflow.add_node("execute_tools", execute_tools_node)
+workflow.add_node("synthesize_answer", synthesis_node)
+
+workflow.add_edge(START, "reasoning_planner")
+workflow.add_conditional_edges(
+    "reasoning_planner",
+    router,
+    {
+        "execute_tools": "execute_tools",
+        "synthesize_answer": "synthesize_answer"
+    }
+)
+workflow.add_edge("execute_tools", "reasoning_planner")
+workflow.add_edge("synthesize_answer", END)
+
+app = workflow.compile()
+
+
+# --- 7. Execution Endpoint ---
+def run_financial_agent(question: str, max_loops: int = 5) -> Dict[str, Any]:
+    """
+    Executes the pipeline and returns the structure demanded by the scoring system.
+    """
+    initial_state = {
+        "question": question,
+        "plan": "",
+        "tool_calls": [],
+        "tool_outputs": [],
+        "context": "",
+        "final_answer": "",
+        "loop_count": 0,
+        "max_loops": max_loops,
+        "tool_trace": []
+    }
+    
+    final_state = app.invoke(initial_state)
+    
+    return {
+        "answer": final_state.get("final_answer", ""),
+        "steps": final_state.get("loop_count", 0),
+        "tool_trace": final_state.get("tool_trace", [])
+    }
