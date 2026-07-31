@@ -15,6 +15,9 @@ venv/
 
 # OS noise
 .DS_Store
+.venv/
+*.pyc
+__pycache__/
 
 # generated/staged data -- regenerate with src/data_prep/*.py, don't commit hundreds of MB
 /data/
