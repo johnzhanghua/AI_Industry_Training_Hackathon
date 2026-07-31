@@ -1,21 +1,67 @@
 from typing import TypedDict, List, Dict, Any, Literal
 import json
 import litellm
+import logging
 import pandas as pd
 import json
 import os
 import glob
 
+from dotenv import load_dotenv
 from langgraph.graph import StateGraph, START, END
+
+# Read .env before the configuration constants below are evaluated.
+load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 cwd_path = os.getcwd()
 CLEANED_RBA_PATH = cwd_path + "/data/rba_cash_rate_cleaned.csv"
 CLEANED_ASX_DIR = cwd_path + "/data/cleaned_asx"
 CLEANED_AFR_DIR = cwd_path + "/data/cleaned_afr"
 
-# Model Configurations
-QWEN_MODEL = "openai/qwen-3.6-35b-a3b-fp8"
-NEMOTRON_MODEL = "openai/llama-3.1-nemotron-nano-8b-v1"
+# --- LiteLLM Gateway Configuration ---
+# Variable names follow Participant_Package/Setup_Instructions.md and
+# handout/02_execution_guide.md. Those two documents disagree on the base-URL name
+# (LITELLM_BASE_URL vs LITELLM_URL), so both are accepted.
+# `or` chains rather than getenv defaults: an empty LITELLM_URL="" is a present
+# value that a getenv default would not override.
+LITELLM_BASE_URL = (
+    os.getenv("LITELLM_BASE_URL")
+    or os.getenv("LITELLM_URL")
+    or "http://localhost:4000/v1"
+)
+LITELLM_KEY = os.getenv("LITELLM_KEY") or "sk-local-cluster"
+
+# --- Model Roles (binding, per Challenge_Brief.md "Required Model Roles") ---
+# BRAIN_MODEL plans and emits tool calls; DOMAIN_FT_MODEL synthesizes the final
+# answer. The "openai/" prefix tells LiteLLM to treat the alias as an
+# OpenAI-compatible route against LITELLM_BASE_URL.
+BRAIN_MODEL = "openai/" + (os.getenv("BRAIN_MODEL") or "agent-brain")
+DOMAIN_FT_MODEL = "openai/" + (os.getenv("DOMAIN_FT_MODEL") or "domain-ft")
+
+# `mock` is the bootstrap plumbing mode and must be switched to `llm` before
+# evaluation, otherwise the fine-tuned model is not actually used and the
+# submission loses model-quality and architecture credit.
+DOMAIN_PREDICT_MODE = (os.getenv("DOMAIN_PREDICT_MODE") or "llm").strip().lower()
+
+# Maximum tool iterations before the graph is forced to synthesize.
+MAX_AGENT_STEPS = int(os.getenv("MAX_AGENT_STEPS") or "5")
+
+
+def call_llm(model: str, system_prompt: str, user_message: str) -> str:
+    """Send a single-turn completion through the LiteLLM gateway and return the text."""
+    response = litellm.completion(
+        model=model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message}
+        ],
+        temperature=0.0,
+        api_base=LITELLM_BASE_URL,
+        api_key=LITELLM_KEY
+    )
+    return response.choices[0].message.content
 
 # --- 1. State Definition ---
 class AgentState(TypedDict):
@@ -264,16 +310,7 @@ def reasoning_planner(state: AgentState) -> Dict[str, Any]:
 
     user_message = f"User Question: {question}\n\nAccumulated Data Context:\n{context}\n\nDetermine the next step."
 
-    response = litellm.completion(
-        model=QWEN_MODEL,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message}
-        ],
-        temperature=0.0
-    )
-
-    response_text = response.choices[0].message.content
+    response_text = call_llm(BRAIN_MODEL, system_prompt, user_message)
     
     # Tool parser
     tool_calls = []
@@ -312,10 +349,11 @@ def execute_tools_node(state: AgentState) -> Dict[str, Any]:
         output = execute_tool(call["name"], call["arguments"])
         outputs.append(output)
         
-        # Capture trace metric
+        # Trace shape matches the README "Question Endpoint" example: tool/args/result.
         new_trace_entries.append({
             "tool": call["name"],
-            "arguments": call["arguments"]
+            "args": call["arguments"],
+            "result": output
         })
         
     combined_new_context = "\n".join(outputs)
@@ -331,11 +369,20 @@ def execute_tools_node(state: AgentState) -> Dict[str, Any]:
 
 def synthesis_node(state: AgentState) -> Dict[str, Any]:
     """
-    Nemotron-Nano-8B synthesizes the final grounded answer.
-    It now parses standardized JSON structures effortlessly.
+    The fine-tuned Nemotron domain model synthesizes the final grounded answer
+    from the verified tool results.
     """
     question = state["question"]
     context = state["context"]
+
+    if DOMAIN_PREDICT_MODE == "mock":
+        # Bootstrap plumbing mode only -- the fine-tuned model is bypassed.
+        logger.warning(
+            "DOMAIN_PREDICT_MODE=mock: returning a stub answer without calling %s. "
+            "Set DOMAIN_PREDICT_MODE=llm before evaluation.",
+            DOMAIN_FT_MODEL
+        )
+        return {"final_answer": f"[mock] Context gathered for: {question}\n{context}".strip()}
 
     system_prompt = (
         "You are an expert financial analysis synthesizer. Generate a direct, grounded answer "
@@ -344,16 +391,7 @@ def synthesis_node(state: AgentState) -> Dict[str, Any]:
 
     user_message = f"Context Blocks:\n{context}\n\nQuestion: {question}"
 
-    response = litellm.completion(
-        model=NEMOTRON_MODEL,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message}
-        ],
-        temperature=0.0
-    )
-
-    return {"final_answer": response.choices[0].message.content}
+    return {"final_answer": call_llm(DOMAIN_FT_MODEL, system_prompt, user_message)}
 
 
 # --- 5. Conditional Routing ---
@@ -391,7 +429,7 @@ app = workflow.compile()
 
 
 # --- 7. Execution Endpoint ---
-def run_financial_agent(question: str, max_loops: int = 5) -> Dict[str, Any]:
+def run_financial_agent(question: str, max_loops: int = MAX_AGENT_STEPS) -> Dict[str, Any]:
     """
     Executes the pipeline and returns the structure demanded by the scoring system.
     """

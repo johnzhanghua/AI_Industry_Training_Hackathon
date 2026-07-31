@@ -24,7 +24,12 @@ async def health_endpoint():
     return {"status": "ok"}
 
 @app.post("/query", response_model=QueryResponse)
-async def query_endpoint(payload: QueryRequest):
+def query_endpoint(payload: QueryRequest):
+    # Deliberately sync, not async: run_financial_agent blocks on LiteLLM calls and
+    # file reads. Declared `async def`, it would block the event loop and serialize
+    # requests; as a plain `def`, FastAPI runs it in a threadpool so the documented
+    # three concurrent requests are genuinely handled in parallel. All request state
+    # is local to the call, so nothing is shared between concurrent invocations.
     try:
         # Call the LangGraph execution endpoint
         result = run_financial_agent(payload.question)
